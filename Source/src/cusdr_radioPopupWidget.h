@@ -143,6 +143,10 @@ private:
 	AeroButton*		band12mBtn;
 	AeroButton*		band10mBtn;
 	AeroButton*		band6mBtn;
+	AeroButton*		band2mBtn;
+	AeroButton*		band125cmBtn;
+	AeroButton*		band70cmBtn;
+	AeroButton*		band33cmBtn;
 	AeroButton*		bandGenBtn;
 	//AeroButton*	bandxxBtn;
 

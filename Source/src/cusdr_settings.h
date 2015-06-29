@@ -81,7 +81,7 @@
 // receiver settings
 
 #define MAX_RECEIVERS				16
-#define MAX_BANDS					16 //RRK seems to be the max for rcvrs?
+#define MAX_BANDS					18
 #define BUFFER_SIZE					1024
 #define SAMPLE_BUFFER_SIZE			4096
 #define BANDSCOPE_BUFFER_SIZE		4096

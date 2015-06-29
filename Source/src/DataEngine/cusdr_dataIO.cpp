@@ -510,7 +510,7 @@ void DataIO::sendAudio(u_char *buf) {
 		cbuf[j].im = (double)sample;
 	}
 
-	if(m_pSoundCardOut)
+    if((m_stopped != true) && m_pSoundCardOut)
 		m_pSoundCardOut->PutOutQueue(63, cbuf);
 }
 

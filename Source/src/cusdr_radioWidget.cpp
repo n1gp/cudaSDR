@@ -343,6 +343,42 @@ void RadioWidget::createBandBtnGroup() {
 	bandBtnList.append(band6mBtn);
 	CHECKED_CONNECT(band6mBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
 
+	band2mBtn = new AeroButton("2 m", this);
+	band2mBtn->setRoundness(0);
+	//band6mBtn->setGlass(false);
+	band2mBtn->setFixedSize(btn_widths, btn_height);
+	band2mBtn->setStyleSheet(set->getMiniButtonStyle());
+	//band6mBtn->setTextColor(QColor(200, 200, 200));
+	bandBtnList.append(band2mBtn);
+	CHECKED_CONNECT(band2mBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band125cmBtn = new AeroButton("125 cm", this);
+	band125cmBtn->setRoundness(0);
+	//band6mBtn->setGlass(false);
+	band125cmBtn->setFixedSize(btn_widths, btn_height);
+	band125cmBtn->setStyleSheet(set->getMiniButtonStyle());
+	//band6mBtn->setTextColor(QColor(200, 200, 200));
+	bandBtnList.append(band125cmBtn);
+	CHECKED_CONNECT(band125cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band70cmBtn = new AeroButton("70 cm", this);
+	band70cmBtn->setRoundness(0);
+	//band6mBtn->setGlass(false);
+	band70cmBtn->setFixedSize(btn_widths, btn_height);
+	band70cmBtn->setStyleSheet(set->getMiniButtonStyle());
+	//band6mBtn->setTextColor(QColor(200, 200, 200));
+	bandBtnList.append(band70cmBtn);
+	CHECKED_CONNECT(band70cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band33cmBtn = new AeroButton("33 cm", this);
+	band33cmBtn->setRoundness(0);
+	//band6mBtn->setGlass(false);
+	band33cmBtn->setFixedSize(btn_widths, btn_height);
+	band33cmBtn->setStyleSheet(set->getMiniButtonStyle());
+	//band6mBtn->setTextColor(QColor(200, 200, 200));
+	bandBtnList.append(band33cmBtn);
+	CHECKED_CONNECT(band33cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
 	bandGenBtn = new AeroButton("Gen", this);
 	bandGenBtn->setRoundness(0);
 	//bandGenBtn->setGlass(false);
@@ -382,6 +418,10 @@ void RadioWidget::createBandBtnGroup() {
     layout->addWidget(band12mBtn, 1, 4);
     layout->addWidget(band10mBtn, 1, 5);
     layout->addWidget(band6mBtn,  2, 0);
+    layout->addWidget(band2mBtn,  2, 0);
+    layout->addWidget(band125cmBtn,  2, 0);
+    layout->addWidget(band70cmBtn,  2, 0);
+    layout->addWidget(band33cmBtn,  2, 0);
     layout->addWidget(bandGenBtn, 2, 1);
 	//layout->addWidget(bandxxBtn, 2, 3);
 
@@ -1176,6 +1216,18 @@ void RadioWidget::bandChangedByBtn() {
 	else
 	if (str == "6 m")
         set->setVFOFrequency(this, 2, m_currentRx, m_lastVfoFrequencyList.at(m6));
+	else
+	if (str == "2 m")
+        set->setVFOFrequency(this, 2, m_currentRx, m_lastVfoFrequencyList.at(m2));
+	else
+	if (str == "125 cm")
+        set->setVFOFrequency(this, 2, m_currentRx, m_lastVfoFrequencyList.at(cm125));
+	else
+	if (str == "70 cm")
+        set->setVFOFrequency(this, 2, m_currentRx, m_lastVfoFrequencyList.at(cm70));
+	else
+	if (str == "33 cm")
+        set->setVFOFrequency(this, 2, m_currentRx, m_lastVfoFrequencyList.at(cm33));
 	else
 	if (str == "Gen")
         set->setVFOFrequency(this, 2, m_currentRx, m_lastVfoFrequencyList.at(gen));

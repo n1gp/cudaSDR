@@ -40,6 +40,7 @@
 
 #include "cusdr_dataEngine.h"
 
+
 /*!
 	\class DataEngine
 	\brief The DataEngine class implements the main SDR functionality.
@@ -1699,7 +1700,6 @@ void DataEngine::stopDataProcessor() {
 			
 			if (io.iq_queue.isEmpty()) {
 				io.iq_queue.enqueue(QByteArray(BUFFER_SIZE, 0x0));
-				//io.iq_queue.enqueue(QByteArray(2*BUFFER_SIZE, 0x0));
 			}
 		}
 		else if (m_serverMode == QSDR::ChirpWSPRFile) {
@@ -2834,6 +2834,14 @@ void DataProcessor::processInputBuffer(const QByteArray &buffer) {
             case 6: m_maxSamples = 512-10; break;
             case 7: m_maxSamples = 512-20; break;
             case 8: m_maxSamples = 512-4;  break;
+            case 9: m_maxSamples = 512-0;  break;
+            case 10: m_maxSamples = 512-8;  break;
+            case 11: m_maxSamples = 512-28;  break;
+            case 12: m_maxSamples = 512-60;  break;
+            case 13: m_maxSamples = 512-24;  break;
+            case 14: m_maxSamples = 512-74;  break;
+            case 15: m_maxSamples = 512-44;  break;
+            case 16: m_maxSamples = 512-14;  break;
         }
 
         // extract the samples
@@ -3296,7 +3304,9 @@ void DataProcessor::encodeCCBytes() {
     		// | | | | | | | |
     		// | | | | | | + + ----------- Alex Tx relay (00 = Tx1, 01= Tx2, 10 = Tx3)
     		// | | | | | + --------------- Duplex (0 = off, 1 = on)
-    		// | | + + +------------------ Number of Receivers (000 = 1, 111 = 8)
+    		// + + + + +------------------ Number of Receivers (000 = 1, 11111 = 32)
+
+                //RRK removed 4HL
             // | +------------------------ Time stamp - 1PPS on LSB of Mic data (0 = off, 1 = on)
     		// +-------------------------- Common Mercury Frequency (0 = independent frequencies to Mercury
     		//			                   Boards, 1 = same frequency to all Mercury boards)
@@ -3311,14 +3321,15 @@ void DataProcessor::encodeCCBytes() {
     		de->io.control_out[4] &= 0xFB; // 1 1 1 1 1 0 1 1
     		de->io.control_out[4] |= de->io.ccTx.duplex << 2;
 
-    		de->io.control_out[4] &= 0xC7; // 1 1 0 0 0 1 1 1
+    		de->io.control_out[4] &= 0x07; // 0 0 0 0 0 1 1 1
     		de->io.control_out[4] |= (de->io.receivers - 1) << 3;
 
-    		de->io.control_out[4] &= 0xBF; // 1 0 1 1 1 1 1 1
-    		de->io.control_out[4] |= de->io.ccTx.timeStamp << 6;
+    		//RRK removed 4HL
+    		//de->io.control_out[4] &= 0xBF; // 1 0 1 1 1 1 1 1
+    		//de->io.control_out[4] |= de->io.ccTx.timeStamp << 6;
 
-    		de->io.control_out[4] &= 0x7F; // 0 1 1 1 1 1 1 1
-    		de->io.control_out[4] |= de->io.ccTx.commonMercuryFrequencies << 7;
+    		//de->io.control_out[4] &= 0x7F; // 0 1 1 1 1 1 1 1
+    		//de->io.control_out[4] |= de->io.ccTx.commonMercuryFrequencies << 7;
 
     		// fill the out buffer with the C&C bytes
     		for (int i = 0; i < 5; i++)
@@ -3357,10 +3368,14 @@ void DataProcessor::encodeCCBytes() {
     		// C0 = 0 0 0 0 1 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _5
     		// C0 = 0 0 0 0 1 1 1 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _6
     		// C0 = 0 0 0 1 0 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _7
+    		// C0 = 0 0 1 0 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _8 // Was 0 0 0 1 0 0 1 x
+    		// C0 = 0 0 1 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _16
 
     		if (de->io.rx_freq_change >= 0) {
 
-    			de->io.output_buffer[3] = (de->io.rx_freq_change + 2) << 1;
+    			de->io.output_buffer[3] = (de->io.rx_freq_change < 7) ? (de->io.rx_freq_change + 2) << 1
+    									      : (de->io.rx_freq_change + 11) << 1;
+    			//RRK removed 4HL de->io.output_buffer[3] = (de->io.rx_freq_change + 2) << 1;
     			de->io.output_buffer[4] = de->RX.at(de->io.rx_freq_change)->getCtrFrequency() >> 24;
     			de->io.output_buffer[5] = de->RX.at(de->io.rx_freq_change)->getCtrFrequency() >> 16;
     			de->io.output_buffer[6] = de->RX.at(de->io.rx_freq_change)->getCtrFrequency() >> 8;

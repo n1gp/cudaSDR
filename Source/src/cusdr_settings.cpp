@@ -1065,6 +1065,54 @@ int Settings::loadSettings() {
 		m_receiverDataList[i].lastVfoFrequencyList << value;
 
 		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency2m");
+		value = settings->value(cstr, 144000000).toDouble();
+		if ((value < 144000000) || (value > 148000000)) value = 144000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency2m");
+		value = settings->value(cstr, 144000000).toDouble();
+		if ((value < 144000000) || (value > 148000000)) value = 144000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency125cm");
+		value = settings->value(cstr, 222000000).toDouble();
+		if ((value < 222000000) || (value > 225000000)) value = 222000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency125cm");
+		value = settings->value(cstr, 222000000).toDouble();
+		if ((value < 222000000) || (value > 225000000)) value = 222000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency70cm");
+		value = settings->value(cstr, 420000000).toDouble();
+		if ((value < 420000000) || (value > 450000000)) value = 420000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency70cm");
+		value = settings->value(cstr, 420000000).toDouble();
+		if ((value < 420000000) || (value > 450000000)) value = 420000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency33cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency33cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
 		cstr.append("/lastCenterFrequencyGen");
 		value = settings->value(cstr, 1800000).toDouble();
 		if ((value < 0) || (value > 50000000)) value = 3500000;

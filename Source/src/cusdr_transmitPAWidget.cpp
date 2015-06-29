@@ -133,7 +133,7 @@ void TransmitPAWidget::createGainGroup() {
 
 	// band label
 	QStringList bandNames;
-    bandNames << "2200m" << "630m" << "160 m" << "80 m" << "60 m" << "40 m" << "30 m" << "20 m" << "17 m" << "15 m" << "12 m" << "10 m" << "6 m" << "gen" << "1" << "2" << "3" << "4";
+    bandNames << "2200m" << "630m" << "160 m" << "80 m" << "60 m" << "40 m" << "30 m" << "20 m" << "17 m" << "15 m" << "12 m" << "10 m" << "6 m" << "2 m" << "125 cm" << "70 cm" << "33 cm" << "gen";
 
 	QList<QLabel *> bandLabelList;
 

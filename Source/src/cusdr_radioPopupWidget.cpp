@@ -589,6 +589,22 @@ void RadioPopupWidget::createBandBtnGroup() {
 	bandBtnList.append(band6mBtn);
 	CHECKED_CONNECT(band6mBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
 
+	band2mBtn = new AeroButton("2 m", this);
+	bandBtnList.append(band2mBtn);
+	CHECKED_CONNECT(band2mBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band125cmBtn = new AeroButton("125 cm", this);
+	bandBtnList.append(band125cmBtn);
+	CHECKED_CONNECT(band125cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band70cmBtn = new AeroButton("70 cm", this);
+	bandBtnList.append(band70cmBtn);
+	CHECKED_CONNECT(band70cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band33cmBtn = new AeroButton("33 cm", this);
+	bandBtnList.append(band33cmBtn);
+	CHECKED_CONNECT(band33cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
 	bandGenBtn = new AeroButton("Gen", this);
 	bandBtnList.append(bandGenBtn);
 	CHECKED_CONNECT(bandGenBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
@@ -623,10 +639,20 @@ void RadioPopupWidget::createBandBtnGroup() {
     hbox2->addWidget(band6mBtn);
     hbox2->addWidget(bandGenBtn);
 
+	QHBoxLayout *hbox3 = new QHBoxLayout();
+	hbox3->setContentsMargins(0, 0, 0, 0);
+	hbox3->setSpacing(0);
+    hbox3->addWidget(band2mBtn);
+    hbox3->addWidget(band125cmBtn);
+	hbox3->addWidget(band70cmBtn);
+	hbox3->addWidget(band12mBtn);
+	hbox3->addWidget(band33cmBtn);
+
     bandVBox = new QVBoxLayout;
 	bandVBox->setSpacing(1);
     bandVBox->addLayout(hbox1);
     bandVBox->addLayout(hbox2);
+    bandVBox->addLayout(hbox3);
 
 }
 
@@ -1159,6 +1185,18 @@ void RadioPopupWidget::bandChangedByBtn() {
 	else
 	if (str == "6 m")
         set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(m6));
+	else
+	if (str == "2 m")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(m2));
+	else
+	if (str == "125 cm")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm125));
+	else
+	if (str == "70 cm")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm70));
+	else
+	if (str == "33 cm")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm33));
 	else
 	if (str == "Gen")
         set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(gen));
