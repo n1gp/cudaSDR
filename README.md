@@ -6,7 +6,7 @@ https://plus.google.com/107168125384405552048/posts
 
 I added local sound and up'd the number of receivers to 16.
 
-Using the Hermes-Lite I can do 16 rcvrs @ 48Khz and 8 @ 192Khz.
+Using the Hermes-Lite I can do 16 rcvrs @ 96Khz and 8 @ 192Khz.
 
 NOTES:
 
