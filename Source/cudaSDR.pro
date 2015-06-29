@@ -1,4 +1,7 @@
 QT += core gui network multimedia opengl
+QMAKE_CFLAGS_RELEASE = -O4
+QMAKE_CXXFLAGS_RELEASE = -O4
+QMAKE_LFLAGS_RELEASE = -O4
 
 TARGET = cudaSDR
 TEMPLATE = app
