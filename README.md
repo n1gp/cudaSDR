@@ -8,4 +8,9 @@ I added local sound and up'd the number of receivers to 16.
 
 Using the Hermes-Lite I can do 16 rcvrs @ 48Khz and 8 @ 192Khz.
 
+NOTES:
+
+> 7 rcvrs requires a protocol change which currently only
+the Hermes-Lite rtl supports.
+
 I have only compiled and used this on linux.
