@@ -1352,12 +1352,14 @@ bool DataEngine::initReceivers(int rcvrs) {
 	// | | | | | | | |
 	// | | | | | | + + ----------- Alex Tx relay (00 = Tx1, 01= Tx2, 10 = Tx3)
 	// | | | | | + --------------- Duplex (0 = off, 1 = on)
-	// | | + + +------------------ Number of Receivers (000 = 1, 111 = 8)
-    // | +------------------------ Time stamp - 1PPS on LSB of Mic data (0 = off, 1 = on)
+	// + + + + +------------------ Number of Receivers (00000 = 1, 11111 = 32)
+
+	//RRK removed 4HL
+        // | +------------------------ Time stamp - 1PPS on LSB of Mic data (0 = off, 1 = on)
 	// +-------------------------- Common Mercury Frequency (0 = independent frequencies to Mercury
 	//			                   Boards, 1 = same frequency to all Mercury boards)
 
-	//io.control_out[4] &= 0xC7; // 1 1 0 0 0 1 1 1
+	io.control_out[4] &= 0x07; // 1 1 0 0 0 1 1 1
 	io.control_out[4] = (io.ccTx.duplex << 2) | ((io.receivers - 1) << 3);
 
 	return true;
@@ -2366,7 +2368,7 @@ void DataEngine::setTimeStamp(QObject *sender, bool value) {
 	io.timeStamp = value;
 	io.mutex.unlock();
 	//io.control_out[4] &= 0xc7;
-	io.control_out[4] |= value << 6;
+	//RRK io.control_out[4] |= value << 6;
 
 	if (value)
 		DATA_ENGINE_DEBUG << "set time stamp on";
