@@ -10,7 +10,7 @@ Using the Hermes-Lite I can do 16 rcvrs @ 48Khz and 8 @ 192Khz.
 
 NOTES:
 
-> 7 rcvrs requires a protocol change which currently only
+Greater than 7 rcvrs requires a protocol change which currently only
 the Hermes-Lite rtl supports.
 
 I have only compiled and used this on linux.
