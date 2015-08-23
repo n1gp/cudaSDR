@@ -57,6 +57,9 @@
 	- implements the audio processor thread.
 	- implements the interface to the Chirp WSPR decoding functionality.
 */
+
+static int firstTimeRxInit;
+
 DataEngine::DataEngine(QObject *parent)
 	: QObject(parent)
 	, set(Settings::instance())
@@ -522,6 +525,7 @@ bool DataEngine::getFirmwareVersions() {
 
 	// init receivers
 	int rcvrs = set->getNumberOfReceivers();
+	firstTimeRxInit = rcvrs;
 
 	QString str = "Initializing %1 receiver(s)...please wait";
 	set->setSystemMessage(str.arg(set->getNumberOfReceivers()), rcvrs * 500);
@@ -3204,7 +3208,7 @@ void DataProcessor::processOutputBuffer(const CPX &buffer) {
 
 void DataProcessor::encodeCCBytes() {
 
-	de->io.output_buffer[0] = SYNC;
+    de->io.output_buffer[0] = SYNC;
     de->io.output_buffer[1] = SYNC;
     de->io.output_buffer[2] = SYNC;
 	
@@ -3372,6 +3376,12 @@ void DataProcessor::encodeCCBytes() {
     		// C0 = 0 0 0 1 0 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _7
     		// C0 = 0 0 1 0 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _8 // Was 0 0 0 1 0 0 1 x
     		// C0 = 0 0 1 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _16
+
+        // RRK, workaround for gige timing bug, make sure all rx freq's are sent on init.
+        if (firstTimeRxInit) {
+          firstTimeRxInit -= 1;
+          de->io.rx_freq_change = firstTimeRxInit;
+        }
 
     		if (de->io.rx_freq_change >= 0) {
 
