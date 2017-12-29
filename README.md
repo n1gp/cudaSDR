@@ -21,6 +21,7 @@ the Hermes-Lite rtl supports.
 I have only compiled and used this on linux.
 
 QT_SELECT=qt5 qmake cudaSDR.pro
+
 make -j9
 
 To make for Hermes-Lite edit Makefile and add -DHL at the end of DEFINES
