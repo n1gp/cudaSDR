@@ -72,8 +72,12 @@ public:
 	PowerSpectrum*		spectrum2;
 	PowerSpectrum*		spectrum4;
 	PowerSpectrum*		spectrum8;
+	PowerSpectrum*		spectrum16;
+	
 	SignalMeter*		signalmeter;
 	Demodulation*		demod;
+
+	QList<PowerSpectrum* >	powerSpectraList;
 
 	void	processDSP(CPX &in, CPX &out,  int size);
 
@@ -108,7 +112,7 @@ private:
 	int		m_size;
 	int		m_spectrumSize;
 	int		m_samplerate;
-	int		m_fftMultiplcator;
+	int		m_fftMultiplier;
 
 	float	m_volume;
 	qreal	m_NcoFreq;

@@ -60,7 +60,11 @@ typedef enum _hamBand {
   cm125,		// 14
   cm70,			// 15
   cm33,			// 16
-  gen			// 17
+  cm23,			// 17
+  cm13,			// 18
+  cm10,			// 19
+  cm5,			// 21
+  gen			// 22
 
 } HamBand;
 
@@ -297,6 +301,39 @@ inline QList<THamBandFrequencies> getHamBandFrequencies() {
 	hamBandFreq.frequencyHi = 928000000;
 	hamBandFreq.hamBand = (HamBand) cm33;
 	hamBandFreq.bandString = "33cm";
+	hamBandFreq.region = (IARURegion) region1;
+
+	hamBandFreqList << hamBandFreq;
+
+//RRK TODO FIX
+	hamBandFreq.frequencyLo = 902000000;
+	hamBandFreq.frequencyHi = 928000000;
+	hamBandFreq.hamBand = (HamBand) cm23;
+	hamBandFreq.bandString = "23cm";
+	hamBandFreq.region = (IARURegion) region1;
+
+	hamBandFreqList << hamBandFreq;
+
+	hamBandFreq.frequencyLo = 902000000;
+	hamBandFreq.frequencyHi = 928000000;
+	hamBandFreq.hamBand = (HamBand) cm13;
+	hamBandFreq.bandString = "13cm";
+	hamBandFreq.region = (IARURegion) region1;
+
+	hamBandFreqList << hamBandFreq;
+
+	hamBandFreq.frequencyLo = 902000000;
+	hamBandFreq.frequencyHi = 928000000;
+	hamBandFreq.hamBand = (HamBand) cm10;
+	hamBandFreq.bandString = "10cm";
+	hamBandFreq.region = (IARURegion) region1;
+
+	hamBandFreqList << hamBandFreq;
+
+	hamBandFreq.frequencyLo = 902000000;
+	hamBandFreq.frequencyHi = 928000000;
+	hamBandFreq.hamBand = (HamBand) cm5;
+	hamBandFreq.bandString = "5cm";
 	hamBandFreq.region = (IARURegion) region1;
 
 	hamBandFreqList << hamBandFreq;

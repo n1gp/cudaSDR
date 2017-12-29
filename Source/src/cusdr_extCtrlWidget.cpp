@@ -138,7 +138,7 @@ void ExtCtrlWidget::createReceivePinsGroup() {
 
 	// band label
 	QStringList bandNames;
-    bandNames << "2200m" << "630m" << "160 m" << "80 m" << "60 m" << "40 m" << "30 m" << "20 m" << "17 m" << "15 m" << "12 m" << "10 m" << "6 m" << "2 m" << "125 cm" << "70 cm" << "33 cm";
+    bandNames << "2200m" << "630m" << "160 m" << "80 m" << "60 m" << "40 m" << "30 m" << "20 m" << "17 m" << "15 m" << "12 m" << "10 m" << "6 m" << "2 m" << "125 cm" << "70 cm" << "33 cm" << "23 cm" << "13 cm" << "10 cm" << "5 cm" << "gen";
 
 	QList<QLabel *> bandLabelList;
 
@@ -212,7 +212,7 @@ void ExtCtrlWidget::createTransmitPinsGroup() {
 
 	// band label
 	QStringList bandNames;
-    bandNames << "2200 m" << "630 m" << "160 m" << "80 m" << "60 m" << "40 m" << "30 m" << "20 m" << "17 m" << "15 m" << "12 m" << "10 m" << "6 m" << "2 m" << "125 cm" << "70 cm" << "33 cm";
+    bandNames << "2200m" << "630m" << "160 m" << "80 m" << "60 m" << "40 m" << "30 m" << "20 m" << "17 m" << "15 m" << "12 m" << "10 m" << "6 m" << "2 m" << "125 cm" << "70 cm" << "33 cm" << "23 cm" << "13 cm" << "10 cm" << "5 cm" << "gen";
 
 	QList<QLabel *> bandLabelList;
 

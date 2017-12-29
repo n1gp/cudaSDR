@@ -2848,6 +2848,10 @@ void DataProcessor::processInputBuffer(const QByteArray &buffer) {
             case 14: m_maxSamples = 512-74;  break;
             case 15: m_maxSamples = 512-44;  break;
             case 16: m_maxSamples = 512-14;  break;
+            case 17: m_maxSamples = 512-88;  break;
+            case 18: m_maxSamples = 512-64;  break;
+            case 19: m_maxSamples = 512-40;  break;
+            case 20: m_maxSamples = 512-16;  break;
         }
 
         // extract the samples
@@ -3376,6 +3380,7 @@ void DataProcessor::encodeCCBytes() {
     		// C0 = 0 0 0 1 0 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _7
     		// C0 = 0 0 1 0 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _8 // Was 0 0 0 1 0 0 1 x
     		// C0 = 0 0 1 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _16
+    		// C0 = 0 0 1 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _16
 
         // RRK, workaround for gige timing bug, make sure all rx freq's are sent on init.
         if (firstTimeRxInit) {
@@ -3550,10 +3555,12 @@ void DataProcessor::writeData() {
 
 	if (m_setNetworkDeviceHeader) {
 
+		//RRK updated for 4byte int and network order
+		quint32 outseq = qFromBigEndian(m_sendSequence);
 		m_outDatagram.resize(0);
         m_outDatagram += m_deviceSendDataSignature;
 
-		QByteArray seq(reinterpret_cast<const char*>(&m_sendSequence), sizeof(m_sendSequence));
+		QByteArray seq(reinterpret_cast<const char*>(&outseq), sizeof(outseq));
 
 		m_outDatagram += seq;
 		m_outDatagram += de->io.audioDatagram;

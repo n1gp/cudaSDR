@@ -93,6 +93,7 @@ private:
 	WaterfallColorMode		m_waterfallColorMode;
 
 	QVBoxLayout*	optionsVBox;
+	QVBoxLayout*	fftOptionsVBox;
 	QVBoxLayout*	bandVBox;
 	QVBoxLayout*	modeVBox;
 	QVBoxLayout*	agcVBox;
@@ -130,6 +131,15 @@ private:
 	AeroButton*		m_WaterfallSimpleBtn;
 	AeroButton*		m_WaterfallEnhancedBtn;
 
+	AeroButton*		m_FFTAutoBtn;
+	AeroButton*		m_4kFFTBtn;
+	AeroButton*		m_8kFFTBtn;
+	AeroButton*		m_16kFFTBtn;
+	AeroButton*		m_32kFFTBtn;
+	AeroButton*		m_64kFFTBtn;
+	AeroButton*		m_128kFFTBtn;
+	AeroButton*		m_256kFFTBtn;
+
     AeroButton*		band2200mBtn;
     AeroButton*		band630mBtn;
     AeroButton*		band160mBtn;
@@ -147,6 +157,10 @@ private:
 	AeroButton*		band125cmBtn;
 	AeroButton*		band70cmBtn;
 	AeroButton*		band33cmBtn;
+	AeroButton*		band23cmBtn;
+	AeroButton*		band13cmBtn;
+	AeroButton*		band10cmBtn;
+	AeroButton*		band5cmBtn;
 	AeroButton*		bandGenBtn;
 	//AeroButton*	bandxxBtn;
 
@@ -272,6 +286,7 @@ private slots:
 
 	void setSticky();
 	void createOptionsBtnGroup();
+	void createFFTOptionsGroup();
 	void createBandBtnGroup();
 	void createModeBtnGroup();
 	void createAgcBtnGroup();

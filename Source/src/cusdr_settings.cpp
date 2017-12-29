@@ -7,7 +7,7 @@
 */
 
 /*   
- *   Copyright 2010, 2011, 2012 Hermann von Hasseln, DL3HVH
+ *   Copyright 2010-2015 Hermann von Hasseln, DL3HVH
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License version 2 as
@@ -72,13 +72,13 @@ Settings::Settings(QObject *parent)
 	settingsFilename = "settings.ini";
 	settings = new QSettings(QCoreApplication::applicationDirPath() +  "/" + settingsFilename, QSettings::IniFormat);
 
-	m_titleString = "cudaSDR BETA ";
+	m_titleString = "cudaSDR BETA";
 
 	#ifdef DEBUG
 		m_titleString = "cudaSDR Debug BETA ";
 	#endif
 
-	m_versionString = "v0.3.2.13";
+	m_versionString = "v0.3.2.13+";
 	
 	qDebug() << qPrintable(m_titleString);
 
@@ -97,6 +97,7 @@ Settings::Settings(QObject *parent)
 
 		m_receiverDataList[i].agcHangThreshold = 0.0;
 		m_receiverDataList[i].peakHold = false;
+		m_receiverDataList[i].fftFactor = 1;
 
 		for (int j = 0; j < MAX_BANDS; j++) {
 
@@ -155,7 +156,7 @@ Settings::Settings(QObject *parent)
 	m_defaultFilterList = getDefaultFilterFrequencies();
 
 	m_transmitter.txAllowed = false;
-	m_fft = 1;
+	//m_fft = 1;
 }
 
 Settings::~Settings() {
@@ -907,6 +908,14 @@ int Settings::loadSettings() {
 			m_receiverDataList[i].clickVFO = true;
 		else
 			m_receiverDataList[i].clickVFO = false;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/fftAuto");
+		str = settings->value(cstr, "off").toString();
+		if (str.toLower() == "on")
+			m_receiverDataList[i].fftAuto = true;
+		else
+			m_receiverDataList[i].fftAuto = false;
 		
         cstr = m_rxStringList.at(i);
         cstr.append("/lastCenterFrequency2200m");
@@ -1106,8 +1115,57 @@ int Settings::loadSettings() {
 		if ((value < 902000000) || (value > 928000000)) value = 902000000;
 		m_receiverDataList[i].lastCenterFrequencyList << value;
 
+//RRK TODO FIX
 		cstr = m_rxStringList.at(i);
 		cstr.append("/lastVfoFrequency33cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency23cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency23cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency13cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency13cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency10cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency10cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastVfoFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastCenterFrequency5cm");
+		value = settings->value(cstr, 902000000).toDouble();
+		if ((value < 902000000) || (value > 928000000)) value = 902000000;
+		m_receiverDataList[i].lastCenterFrequencyList << value;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/lastVfoFrequency5cm");
 		value = settings->value(cstr, 902000000).toDouble();
 		if ((value < 902000000) || (value > 928000000)) value = 902000000;
 		m_receiverDataList[i].lastVfoFrequencyList << value;
@@ -1888,6 +1946,13 @@ int Settings::saveSettings() {
 		str = m_rxStringList.at(i);
 		str.append("/clickVFO");
 		if (m_receiverDataList[i].clickVFO)
+			settings->setValue(str, "on");
+		else
+			settings->setValue(str, "off");
+
+		str = m_rxStringList.at(i);
+		str.append("/fftAuto");
+		if (m_receiverDataList[i].fftAuto)
 			settings->setValue(str, "on");
 		else
 			settings->setValue(str, "off");
@@ -3820,7 +3885,7 @@ void Settings::setSampleSize(QObject* sender, int rx, int size) {
 
 	Q_UNUSED (sender)
 
-	if (rx == 0) {
+	/*if (rx == 0) {
 
 		SETTINGS_DEBUG << "set sample size to: " << size;
 		switch (size) {
@@ -3840,10 +3905,61 @@ void Settings::setSampleSize(QObject* sender, int rx, int size) {
 			case 32768:
 				m_fft = 8;
 				break;
+
+			case 65536:
+				m_fft = 16;
+				break;
+
+			case 131072:
+				m_fft = 32;
+				break;
+
+			case 262144:
+				m_fft = 64;
+				break;
 		}
 
 		emit sampleSizeChanged(0, size);
+	}*/
+
+	SETTINGS_DEBUG << "set sample size to: " << size << " for Rx " << rx;
+	switch (size) {
+
+		case 4096:
+			m_receiverDataList[rx].fftFactor = 1;
+			break;
+
+		case 8192:
+			m_receiverDataList[rx].fftFactor = 2;
+			break;
+
+		case 16384:
+			m_receiverDataList[rx].fftFactor = 4;
+			break;
+
+		case 32768:
+			m_receiverDataList[rx].fftFactor = 8;
+			break;
+
+		case 65536:
+			m_receiverDataList[rx].fftFactor = 16;
+			break;
+
+		case 131072:
+			m_receiverDataList[rx].fftFactor = 32;
+			break;
+
+		case 262144:
+			m_receiverDataList[rx].fftFactor = 64;
+			break;
 	}
+	
+	emit sampleSizeChanged(rx, size);
+}
+
+int Settings::getFFTMultiplicator(int rx) {
+
+	return m_receiverDataList.at(rx).fftFactor;
 }
 
 // Alex configuration:
@@ -4587,6 +4703,11 @@ void Settings::setHairCross(bool value, int rx) {
 bool Settings::getHairCrossStatus(int rx) { 
 	
 	return m_receiverDataList[rx].hairCross;
+}
+
+bool Settings::getFFTAutoStatus(int rx) {
+
+	return m_receiverDataList[rx].fftAuto;
 }
 
 void Settings::setWaterfallTime(int rx, int value) {

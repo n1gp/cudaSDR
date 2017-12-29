@@ -89,6 +89,10 @@ private:
 	AeroButton	*band125cmBtn;
 	AeroButton	*band70cmBtn;
 	AeroButton	*band33cmBtn;
+	AeroButton	*band23cmBtn;
+	AeroButton	*band13cmBtn;
+	AeroButton	*band10cmBtn;
+	AeroButton	*band5cmBtn;
 	AeroButton	*bandGenBtn;
 	//AeroButton	*bandxxBtn;
 

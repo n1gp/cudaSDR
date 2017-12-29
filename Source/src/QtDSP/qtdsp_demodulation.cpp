@@ -123,7 +123,7 @@ void Demodulation::DoSAM(CPX &in, CPX &out ) {
 
         if ((delay0.im) == 0.0 && (delay0.re == 0.0)) {
 
-             delay0.re = 0.000000000001;
+             delay0.re = 0.000000000001f;
         }
 
         difference = sqrt(in.at(i).re * in.at(i).re + in.at(i).im * in.at(i).im) * (qAtan2(delay0.im, delay0.re));
@@ -139,10 +139,10 @@ void Demodulation::DoSAM(CPX &in, CPX &out ) {
         m_phase += m_pll_frequency + m_alpha * difference;
 
         while (m_phase >= TWOPI)
-        	m_phase -= TWOPI;
+        	m_phase -= (float)TWOPI;
 
         while (m_phase < 0)
-            m_phase += TWOPI;
+            m_phase += (float)TWOPI;
 
         m_lockcurrent = 0.999 * m_lockcurrent + 0.001 * qAbs(delay0.re);
         m_lockprevious = m_lockcurrent;
@@ -167,7 +167,7 @@ void Demodulation::DoFMN(CPX &in, CPX &out ) {
 
         if ((delay0.im) == 0.0 && (delay0.re == 0.0)) {
 
-             delay0.re = 0.000000000001;
+             delay0.re = 0.000000000001f;
         }
         difference = qAtan2(delay0.im, delay0.re);
 
@@ -181,9 +181,9 @@ void Demodulation::DoFMN(CPX &in, CPX &out ) {
         m_phase += m_pll_frequency + m_alpha * difference;
 
         while (m_phase >= TWOPI)
-            m_phase -= TWOPI;
+			m_phase -= (float)TWOPI;
         while (m_phase < 0)
-            m_phase += TWOPI;
+			m_phase += (float)TWOPI;
 
         m_afc = 0.99 * m_afc + 0.01 * m_pll_frequency;
         out[i].re = (m_pll_frequency - m_afc) * m_cvt;

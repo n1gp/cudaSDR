@@ -211,7 +211,7 @@ void QFilter::Normalize(CPX &in, CPX &out, int size) {
 
 void QFilter::Decimate(CPX &in, CPX &out, int downrate) {
 
-	int newsize = qRound((float) m_size/downrate);
+	int newsize = qRound(qreal(m_size / downrate));
 
 	//memset(out, 0, newsize * sizeof(CPX));
 	//memset(tmp, 0, m_size * sizeof(CPX));

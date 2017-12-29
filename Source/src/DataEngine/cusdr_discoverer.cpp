@@ -56,6 +56,8 @@ Discoverer::Discoverer(THPSDRParameter *ioData)
 Discoverer::~Discoverer() {
 }
 
+TNetworkDevicecard mc;
+
 void Discoverer::initHPSDRDevice() {
 
 	m_searchTime.start();
@@ -188,7 +190,6 @@ int Discoverer::findHPSDRDevices() {
 
 	while (socket.hasPendingDatagrams()) {
 
-		TNetworkDevicecard mc;
 		quint16 port;
 				
 		m_deviceDatagram.resize(socket.pendingDatagramSize());
@@ -217,6 +218,11 @@ int Discoverer::findHPSDRDevices() {
 					str = "Griffin";
 				else if (no == 4)
 					str = "Angelia";
+				else if (no == 5)
+					str = "Orion";
+				else if (no == 6) {
+					str = "Hermes-Lite";
+				}
 
 				mc.boardID = no;
 				mc.boardName = str;
@@ -237,8 +243,11 @@ int Discoverer::findHPSDRDevices() {
 			else if (m_deviceDatagram[2] == (char)0x03) {
 
 				io->networkIOMutex.lock();
-				DISCOVERER_DEBUG << "Device already sending data!";
+				DISCOVERER_DEBUG << "Device already sending data - trying to shut down...";
 				io->networkIOMutex.unlock();
+
+				shutdownHPSDRDevice();
+				clear();
 			}
 		}
 		
@@ -268,4 +277,26 @@ void Discoverer::clear() {
 
 	//m_metisDeviceComboBox->clear();
 	m_deviceCards.clear();
+}
+
+void Discoverer::shutdownHPSDRDevice() {
+
+	QByteArray arr;
+	arr.resize(64);
+	arr[0] = (char)0xEF;
+	arr[1] = (char)0xFE;
+	arr[2] = (char)0x04;
+	arr[3] = (char)0x00;
+
+	for (int i = 4; i < 64; i++) arr[i] = 0x00;
+
+	QUdpSocket socket;
+	QHostAddress addr = mc.ip_address;
+
+	for (int i = 0; i < 10; i++) {
+
+		if (socket.writeDatagram(arr, addr, DEVICE_PORT) < 0) {
+			DISCOVERER_DEBUG << "forced shutdown socket write failed.";
+		}
+	}
 }

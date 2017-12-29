@@ -33,6 +33,11 @@
 
 #include "qtdsp_dspEngine.h"
 
+double myLog(double x, double base) {
+	
+	return log(x) / log(base);
+}
+
 
 QDSPEngine::QDSPEngine(QObject *parent, int rx, int size)
 	: QObject(parent)
@@ -41,18 +46,18 @@ QDSPEngine::QDSPEngine(QObject *parent, int rx, int size)
 	, m_rx(rx)
 	, m_size(size)
 	, m_samplerate(set->getSampleRate())
-	, m_fftMultiplcator(1)
+	, m_fftMultiplier(1)
 	, m_volume(0.0f)
 {
 	qRegisterMetaType<QVector<cpx> >();
 	qRegisterMetaType<CPX>();
 
-	fft    		= new QFFT(m_size);
+	fft    		= new QFFT(m_size); // m_size = 1024
 	filter 		= new QFilter(this, m_size, 2, 12);//8);
 	wpagc  		= new QWPAGC(this, m_size);
-	spectrum 	= new PowerSpectrum(this, m_size*2);
+	//spectrum 	= new PowerSpectrum(this, m_size*2);
 
-	QString str = "Initializing DSP engine for rx %1: 8k FFT ...please wait";
+	/*QString str = "Initializing DSP engine for rx %1: 8k FFT ...please wait";
 	set->setSystemMessage(str.arg(m_rx), 0);
 		
 	if (m_rx == 0) {
@@ -66,6 +71,20 @@ QDSPEngine::QDSPEngine(QObject *parent, int rx, int size)
 		str = "Initializing DSP engine for rx %1: 32k FFT ...please wait";
 		set->setSystemMessage(str.arg(m_rx), 0);
 		spectrum8 	= new PowerSpectrum(this, m_size*16);
+
+		str = "Initializing DSP engine for rx %1: 64k FFT ...please wait";
+		set->setSystemMessage(str.arg(m_rx), 0);
+		spectrum16 	= new PowerSpectrum(this, m_size*32);
+	}*/
+
+	int factor = 2;
+	
+	while (factor <= 128) {
+
+		PowerSpectrum* spec = new PowerSpectrum(this, m_size*factor);
+		powerSpectraList << spec;
+
+		factor *= 2;
 	}
 
 	m_spectrumSize = m_size*4;
@@ -116,8 +135,13 @@ QDSPEngine::~QDSPEngine() {
 	if (wpagc)
 		delete wpagc;
 
-	if (spectrum)
-		delete spectrum;
+	//if (spectrum)
+	//	delete spectrum;
+
+	if (!powerSpectraList.empty()) {
+
+		powerSpectraList.clear();
+	}
 
 	if (signalmeter)
 		delete signalmeter;
@@ -175,7 +199,7 @@ void QDSPEngine::processDSP(CPX &in, CPX &out, int size) {
 
 	m_mutex.lock();
 
-	switch (m_fftMultiplcator) {
+	/*switch (m_fftMultiplcator) {
 
 		case 1:
 			spectrum->ProcessSpectrum(in, size*2, 1);
@@ -192,7 +216,14 @@ void QDSPEngine::processDSP(CPX &in, CPX &out, int size) {
 		case 8:
 			spectrum8->ProcessSpectrum(in, size*16, 15);
 			break;
-	}
+
+		case 16:
+			spectrum16->ProcessSpectrum(in, size*32, 31);
+			break;
+	}*/
+
+	int idx = (int)(myLog(m_fftMultiplier, 2));
+	powerSpectraList.at(idx)->ProcessSpectrum(in, size * m_fftMultiplier * 2, m_fftMultiplier*2-1);
 
 	if (m_NcoFreq != 0)
 		ProcessFrequencyShift(in, in, size);
@@ -214,36 +245,10 @@ void QDSPEngine::processDSP(CPX &in, CPX &out, int size) {
 
 int	QDSPEngine::getSpectrum(qVectorFloat &buffer, int mult) {
 
-	if (m_rx == 0) {
-		
-		m_fftMultiplcator = mult;
-		switch (m_fftMultiplcator) {
-			
-			case 1:
-				return spectrum->spectrumResult(buffer, 0);
-				break;
-
-			case 2:
-				return spectrum2->spectrumResult(buffer, 2048);
-				break;
-
-			case 4:
-				return spectrum4->spectrumResult(buffer, 6144);
-				break;
-
-			case 8:
-				return spectrum8->spectrumResult(buffer, 14336);
-				break;
-
-			default:
-				return spectrum->spectrumResult(buffer, 0);
-				break;
-		}
-	}
-	else {
-
-		return spectrum->spectrumResult(buffer, 0);
-	}
+	m_fftMultiplier = mult;
+	int idx = (int)(myLog(m_fftMultiplier, 2));
+	
+	return powerSpectraList.at(idx)->spectrumResult(buffer, m_size * m_fftMultiplier * 2 - 2048);
 }
 
 float QDSPEngine::getSMeterInstValue() {
@@ -354,9 +359,7 @@ void QDSPEngine::setNCOFrequency(int rx, long ncoFreq) {
 
 void QDSPEngine::setSampleSize(int rx, int size) {
 
-	Q_UNUSED(rx)
-
-	if (m_rx == 0) {
+	if (m_rx == rx) {
 
 		m_mutex.lock();
 		m_spectrumSize = size;

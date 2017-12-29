@@ -58,6 +58,7 @@ public:
 
 	int		findHPSDRDevices();
 	void	clear();
+	void	shutdownHPSDRDevice();
 
 public slots:
 	void	initHPSDRDevice();

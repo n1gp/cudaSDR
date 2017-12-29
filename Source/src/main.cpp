@@ -32,6 +32,9 @@
 	#include "Util/cusdr_cpuUsage.h"
 #elif defined(Q_OS_LINUX)
     #include "Util/cusdr_cpuUsage_unix.h"
+	#include <unistd.h>
+	#include <errno.h>
+	#define fopen_s(pFile,filename,mode) ((*(pFile))=fopen((filename),  (mode)))==NULL
 #endif
 
 #include "fftw3.h"
@@ -88,35 +91,51 @@ void cuSDRMessageHandler(QtMsgType type, const QMessageLogContext &context, cons
     ts << txt << endl << flush;
 }
 
-static void my_fftw_write_char(char c, void *f) { fputc(c, (FILE *) f); }
-#define fftw_export_wisdom_to_file(f) fftw_export_wisdom(my_fftw_write_char, (void*) (f))
-#define fftwf_export_wisdom_to_file(f) fftwf_export_wisdom(my_fftw_write_char, (void*) (f))
-#define fftwl_export_wisdom_to_file(f) fftwl_export_wisdom(my_fftw_write_char, (void*) (f))
-
-static int my_fftw_read_char(void *f) { return fgetc((FILE *) f); }
-#define fftw_import_wisdom_from_file(f) fftw_import_wisdom(my_fftw_read_char, (void*) (f))
-#define fftwf_import_wisdom_from_file(f) fftwf_import_wisdom(my_fftw_read_char, (void*) (f))
-#define fftwl_import_wisdom_from_file(f) fftwl_import_wisdom(my_fftw_read_char, (void*) (f))
-
 void runFFTWWisdom() {
 
 	QString directory = QDir::currentPath();
-	
 	QDir currentDir = QDir(directory);
-	qDebug() << currentDir;
+
+	int err;
+	FILE* wisdomFile;
+
+	qDebug() << "Init::\tcurrent path: " << qPrintable(currentDir.absolutePath());
 	
-	if (currentDir.exists("wisdom")) {
+	if (currentDir.exists("fftwf_wisdom")) {
 	
-		qDebug() << "wisdom exists !";
-		return;
+		qDebug() << "Init::\tfftwf_wisdom exists.";
+
+		/*errno_t err;
+		FILE* wisdomFile;*/
+		err = fopen_s(&wisdomFile, "fftwf_wisdom", "r");
+		if (err == 0) {
+
+			qDebug() << "Init::\tfound fftwf_wisdom - this will be quick!";
+			fftwf_import_wisdom_from_file(wisdomFile);
+			fclose(wisdomFile);
+		}
+		else {
+
+			qDebug() << "Init::\tfound fftwf_wisdom but could not open.";
+			return;
+		}
+
 	}
 	else {
 	
-		qDebug() << "wisdom does not exist - planning FFT...";
+		qDebug() << "Init::\tfftw_wisdom does not exist - planning FFT...";
+	
+		//string fname = "F:\\Eigene Dokumente\\Visual Studio 2010\\Projects\\cuSDR64\\fftwf_wisdom";
+		//FILE* wis = fopen (fname.c_str(), "r");
+	
+		/*if (wis) {
 
-		/*const char* wisdom_file = "wisdom";
-		if (!fftw_import_wisdom_from_file(wisdom_file)) {
-
+			qDebug() << "Init::\tfound fftwf_wisdom - this will be quick!";
+			fftwf_import_wisdom_from_file(wis);
+			fclose (wis);
+		}
+		else {*/
+			
 			int size = 64;
 		
 			QString str = "Planning FFT size %1";
@@ -127,7 +146,7 @@ void runFFTWWisdom() {
 
 			while (size <= MAX_FFTSIZE) {
 
-				qDebug() << str.arg(size);
+				qDebug() << qPrintable(str.arg(size));
 				cpxbuf = (fftwf_complex *) fftwf_malloc(sizeof(fftwf_complex) * size);
 			
 				plan_fwd = fftwf_plan_dft_1d(size , cpxbuf, cpxbuf, FFTW_FORWARD, FFTW_PATIENT);
@@ -140,12 +159,22 @@ void runFFTWWisdom() {
 
 				size *= 2;
 			}
-			fftw_export_wisdom_to_file(wisdom_file);
-		}*/
-		//QProcess process;
-		//process.start("fftwf-wisdom.exe");
-		//process.waitForFinished();
-	}
+			//FILE* wis = fopen (fname.c_str(), "w");
+			//if (wis) {
+			
+			err = fopen_s(&wisdomFile, "fftwf_wisdom", "w");
+			if (err == 0) {
+				
+				qDebug() << "Init::\texporting fftwf_wisdom for quick measurement.";
+				fftwf_export_wisdom_to_file(wisdomFile);
+				qDebug() << "Init::\texported fftwf_wisdom.";
+				fclose(wisdomFile);
+			}
+			else {
+
+				qDebug() << "Init::\tcould not write fftwf_wisdom.";
+			}
+		}
 }
 
 int main(int argc, char *argv[]) {
@@ -353,6 +382,94 @@ int main(int argc, char *argv[]) {
 
     SleeperThread::msleep(300);
 	
+	//*************************************************************************
+	// FFTW wisdom
+
+	QString directory = QDir::currentPath();	
+	QDir currentDir = QDir(directory);
+
+	int err;
+	FILE* wisdomFile;
+
+	qDebug() << "Init::\tcurrent path: " << qPrintable(currentDir.absolutePath());
+
+	if (currentDir.exists("fftwf_wisdom")) {
+	
+		qDebug() << "Init::\tfftwf_wisdom exists.";
+
+		err = fopen_s(&wisdomFile, "fftwf_wisdom", "r");
+		if (err == 0) {
+
+			qDebug() << "Init::\tfound fftwf_wisdom - this will be quick!";
+			splash->showMessage(
+				"\n      " +
+				Settings::instance()->getTitleStr() + " " +
+				Settings::instance()->getVersionStr() +
+				QObject::tr(":   found fftwf_wisdom - loading .."),
+				Qt::AlignTop | Qt::AlignLeft, Qt::yellow);
+
+			fftwf_import_wisdom_from_file(wisdomFile);
+			fclose(wisdomFile);
+		}
+		else {
+
+			qDebug() << "Init::\tfound fftwf_wisdom but could not open.";
+			return -1;
+		}
+
+	}
+	else {
+	
+		qDebug() << "Init::\tfftw_wisdom does not exist - planning FFT...";
+	
+		QString msg = "First time FFT planning. Please be patient, this may take up to 10 min!";
+		mainWindow.showWarningDialog(msg);
+
+		int size = 64;
+		QString str = "planning FFT size %1 ...";
+
+		fftwf_complex* cpxbuf;
+		fftwf_plan plan_fwd;
+		fftwf_plan plan_rev;
+
+		while (size <= MAX_FFTSIZE) {
+		//while (size <= 2048) {
+
+			qDebug() << qPrintable(str.arg(size));
+			splash->showMessage(
+				"\n      " +
+				Settings::instance()->getTitleStr() + " " +
+				Settings::instance()->getVersionStr() +
+				QObject::tr(":   ") + str.arg(size),
+				Qt::AlignTop | Qt::AlignLeft, Qt::yellow);
+
+			cpxbuf = (fftwf_complex *) fftwf_malloc(sizeof(fftwf_complex) * size);
+			
+			plan_fwd = fftwf_plan_dft_1d(size , cpxbuf, cpxbuf, FFTW_FORWARD, FFTW_PATIENT);
+			fftwf_execute(plan_fwd);
+			fftwf_destroy_plan(plan_fwd);
+
+			plan_rev = fftwf_plan_dft_1d(size, cpxbuf, cpxbuf, FFTW_BACKWARD, FFTW_PATIENT);
+			fftwf_execute(plan_rev);
+			fftwf_destroy_plan(plan_rev);
+
+			size *= 2;
+		}
+			
+		err = fopen_s(&wisdomFile, "fftwf_wisdom", "w");
+		if (err == 0) {
+				
+			qDebug() << "Init::\texporting fftwf_wisdom for quick measurement.";
+			fftwf_export_wisdom_to_file(wisdomFile);
+			qDebug() << "Init::\texported fftwf_wisdom.";
+			fclose(wisdomFile);
+		}
+		else {
+
+			qDebug() << "Init::\tcould not write fftwf_wisdom.";
+		}
+	}
+
     //app.processEvents();
 
     mainWindow.show();

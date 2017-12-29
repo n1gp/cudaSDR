@@ -321,7 +321,7 @@ void Receiver::dspProcessing() {
 	//io.mutex.unlock();
 
 	// spectrum
-	qtdsp->getSpectrum(newSpectrum, set->getFFTMultiplicator());
+	qtdsp->getSpectrum(newSpectrum, set->getFFTMultiplicator(m_receiver));
 	if (highResTimer->getElapsedTimeInMicroSec() >= getDisplayDelay()) {
 
 		emit spectrumBufferChanged(m_receiver, newSpectrum);

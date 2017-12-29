@@ -760,7 +760,7 @@ void QGLReceiverPanel::drawPanadapter() {
 			glEnd();
 		}
 
-#if 0 // remove big red overload indicator
+#if 0 //RRK remove big red overload indicator
 		if (m_adcStatus == 2) {
 
 			glBegin(GL_TRIANGLE_STRIP);
@@ -1774,7 +1774,21 @@ void QGLReceiverPanel::drawVFOControl() {
 	}
 
 	// FFT size
-	if (m_receiver == 0) {
+	//if (m_receiver == 0) {
+	if (set->getFFTAutoStatus(m_receiver)) {
+	}
+	else {
+
+		str = "sample size: %1";
+		x1 = m_panRect.right() - m_fonts.smallFontMetrics->width(str) - 65;
+
+		if (m_dataEngineState == QSDR::DataEngineUp) {
+				
+			qglColor(QColor(0, 0, 0, 255));
+			m_oglTextSmall->renderText(x1+3, y1, 0.0f, str.arg(m_sampleSize));
+			qglColor(QColor(255, 170, 90, 200));
+			m_oglTextSmall->renderText(x1+1, y1-2, 1.0f, str.arg(m_sampleSize));
+		}
 		
 		str = "FFT: %1";
 		//float res;
@@ -1796,6 +1810,10 @@ void QGLReceiverPanel::drawVFOControl() {
 
 			case 8:
 				s = "32k";
+				break;
+
+			case 16:
+				s = "64k";
 				break;
 		}
 		x1 = m_panRect.right() - m_fonts.smallFontMetrics->width(str) - 5;
@@ -3766,15 +3784,18 @@ void QGLReceiverPanel::computeDisplayBins(QVector<float>& buffer, QVector<float>
 		deltaSampleSize = m_spectrumSize - m_sampleSize;
 	}
 
-	if (m_receiver == 0) {
+	if (set->getFFTAutoStatus(m_receiver)) {
+	}
+	else {
 	
 		if (m_sampleSize < 2048) {
 
 			if (m_fftMult == 1) {
 
 				GRAPHICS_DEBUG << "set sample size to 8192";
-				set->setSampleSize(this, 0, 8192);
-				m_dBmPanLogGain += 6.0;
+				set->setSampleSize(this, m_receiver, 8192);
+				//m_dBmPanLogGain += 3.0103;
+				m_dBmPanLogGain += 6;
 				m_fftMult = 2;
 
 				return;
@@ -3782,8 +3803,9 @@ void QGLReceiverPanel::computeDisplayBins(QVector<float>& buffer, QVector<float>
 			else if (m_fftMult == 2) {
 
 				GRAPHICS_DEBUG << "set sample size to 16384";
-				set->setSampleSize(this, 0, 16384);
-				m_dBmPanLogGain += 6.0;
+				set->setSampleSize(this, m_receiver, 16384);
+				//m_dBmPanLogGain += 3.0103;
+				m_dBmPanLogGain += 6;
 				m_fftMult = 4;
 
 				return;
@@ -3791,9 +3813,20 @@ void QGLReceiverPanel::computeDisplayBins(QVector<float>& buffer, QVector<float>
 			else if (m_fftMult == 4) {
 
 				GRAPHICS_DEBUG << "set sample size to 32768";
-				set->setSampleSize(this, 0, 32768);
-				m_dBmPanLogGain += 6.0;
+				set->setSampleSize(this, m_receiver, 32768);
+				//m_dBmPanLogGain += 3.0103;
+				m_dBmPanLogGain += 6;
 				m_fftMult = 8;
+
+				return;
+			}
+			else if (m_fftMult == 8) {
+
+				GRAPHICS_DEBUG << "set sample size to 65536";
+				set->setSampleSize(this, m_receiver, 65536);
+				//m_dBmPanLogGain += 3.0103;
+				m_dBmPanLogGain += 6;
+				m_fftMult = 16;
 
 				return;
 			}
@@ -3803,8 +3836,9 @@ void QGLReceiverPanel::computeDisplayBins(QVector<float>& buffer, QVector<float>
 			if (m_fftMult == 2) {
 
 				GRAPHICS_DEBUG << "set sample size to 4096";
-				set->setSampleSize(this, 0, 4096);
-				m_dBmPanLogGain -= 6.0;
+				set->setSampleSize(this, m_receiver, 4096);
+				//m_dBmPanLogGain -= 3.0103;
+				m_dBmPanLogGain -= 6;
 				m_fftMult = 1;
 
 				return;
@@ -3812,8 +3846,9 @@ void QGLReceiverPanel::computeDisplayBins(QVector<float>& buffer, QVector<float>
 			else if (m_fftMult == 4) {
 
 				GRAPHICS_DEBUG << "set sample size to 8192";
-				set->setSampleSize(this, 0, 8192);
-				m_dBmPanLogGain -= 6.0;
+				set->setSampleSize(this, m_receiver, 8192);
+				//m_dBmPanLogGain -= 3.0103;
+				m_dBmPanLogGain -= 6;
 				m_fftMult = 2;
 
 				return;
@@ -3821,9 +3856,20 @@ void QGLReceiverPanel::computeDisplayBins(QVector<float>& buffer, QVector<float>
 			else if (m_fftMult == 8) {
 
 				GRAPHICS_DEBUG << "set sample size to 16384";
-				set->setSampleSize(this, 0, 16384);
-				m_dBmPanLogGain -= 6.0;
+				set->setSampleSize(this, m_receiver, 16384);
+				//m_dBmPanLogGain -= 3.0103;
+				m_dBmPanLogGain -= 6;
 				m_fftMult = 4;
+
+				return;
+			}
+			else if (m_fftMult == 16) {
+
+				GRAPHICS_DEBUG << "set sample size to 32768";
+				set->setSampleSize(this, m_receiver, 32768);
+				//m_dBmPanLogGain -= 3.0103;
+				m_dBmPanLogGain -= 6;
+				m_fftMult = 8;
 
 				return;
 			}

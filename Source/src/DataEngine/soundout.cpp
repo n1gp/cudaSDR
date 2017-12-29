@@ -149,7 +149,7 @@ QAudioDeviceInfo  DeviceInfo;
 	if (-1 == OutDevIndx) m_OutDeviceInfo = QAudioDeviceInfo::defaultOutputDevice();
 	else m_OutDeviceInfo = m_OutDevices.at(OutDevIndx);
 
-#if 0 //RRK get a list of audio devices and the default
+#if 1 //RRK get a list of audio devices and the default
 	foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
 	     qDebug() << "l:" << deviceInfo.deviceName();
 	}

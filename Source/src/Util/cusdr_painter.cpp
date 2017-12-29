@@ -189,8 +189,8 @@ void QHPainter::drawShadowText (qreal x, qreal y,
 	shadowImage.shadowBlur(radius, shadowColor);
 
 	// Compose Text and Shadow
-	int addSizeX = (offset.x() > radius) ? (abs(offset.x()) - radius) : 0;
-	int addSizeY = (offset.y() > radius) ? (abs(offset.y()) - radius) : 0;
+	int addSizeX = (offset.x() > radius) ? (fabs(offset.x()) - radius) : 0;
+	int addSizeY = (offset.y() > radius) ? (fabs(offset.y()) - radius) : 0;
 	QSize finalSize = shadowImage.size() + QSize(addSizeX, addSizeY);
 
 	QPointF shadowTopLeft(QPointF((finalSize.width() - shadowImage.width()) / 2.0,

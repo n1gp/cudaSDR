@@ -120,6 +120,7 @@ void DataIO::stop() {
 	io->networkIOMutex.unlock();
 
 	if(m_pSoundCardOut) {
+		SleeperThread::msleep(100);
 		m_pSoundCardOut->Stop();
 		delete m_pSoundCardOut;
 	}

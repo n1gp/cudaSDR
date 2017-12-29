@@ -30,6 +30,7 @@
 #define CUSDR_PAINTER_H
 
 #include <QPainter>
+#include <cmath>
 
 class QHPainter : public QPainter {
 

@@ -7,7 +7,7 @@
 */
 
 /*   
- *   Copyright 2010, 2011, 2012 Hermann von Hasseln, DL3HVH
+ *   Copyright 2010 - 2015 Hermann von Hasseln, DL3HVH
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License version 2 as
@@ -29,7 +29,6 @@
 
 //#define DEBUG
 
-
 #include <QObject>
 #include <QErrorMessage>
 #include <QMutex>
@@ -39,6 +38,7 @@
 #include <QAudioOutput>
 
 #include "cusdr_hamDatabase.h"
+#include "fftw3.h"
 
 // test for OpenCL
 //#include "CL/qclcontext.h"
@@ -69,8 +69,11 @@
 //#define AGCOFFSET 33.0
 
 #define MAXFREQUENCY 961440000
-//#define MAXHPFREQUENCY 61440000
+#ifdef HL
 #define MAXHPFREQUENCY 30720000
+#else
+#define MAXHPFREQUENCY 61440000
+#endif
 #define MINDBM -180
 #define MAXDBM 10
 #define MINDISTDBM -150
@@ -78,10 +81,26 @@
 #define MAX_FFTSIZE	262144
 
 // **************************************
+// fftw definitions
+
+static void my_fftw_write_char(char c, void *f) { fputc(c, (FILE *) f); }
+//static void my_fftw_write_char(char c, void *f) { fputc(c, (QFILE *) f); }
+#define fftw_export_wisdom_to_file(f) fftw_export_wisdom(my_fftw_write_char, (void*) (f))
+#define fftwf_export_wisdom_to_file(f) fftwf_export_wisdom(my_fftw_write_char, (void*) (f))
+#define fftwl_export_wisdom_to_file(f) fftwl_export_wisdom(my_fftw_write_char, (void*) (f))
+
+static int my_fftw_read_char(void *f) { return fgetc((FILE *) f); }
+#define fftw_import_wisdom_from_file(f) fftw_import_wisdom(my_fftw_read_char, (void*) (f))
+#define fftwf_import_wisdom_from_file(f) fftwf_import_wisdom(my_fftw_read_char, (void*) (f))
+#define fftwl_import_wisdom_from_file(f) fftwl_import_wisdom(my_fftw_read_char, (void*) (f))
+
+
+
+// **************************************
 // receiver settings
 
-#define MAX_RECEIVERS				16
-#define MAX_BANDS					18
+#define MAX_RECEIVERS				20
+#define MAX_BANDS					22
 #define BUFFER_SIZE					1024
 #define SAMPLE_BUFFER_SIZE			4096
 #define BANDSCOPE_BUFFER_SIZE		4096
@@ -507,6 +526,7 @@ typedef struct _receiver {
 	bool	panGrid;
 	bool	peakHold;
 	bool	clickVFO;
+	bool	fftAuto;
 
 	long	ctrFrequency;
 	long	vfoFrequency;
@@ -535,6 +555,7 @@ typedef struct _receiver {
 	int		waterfallOffsetLo;
 	int		waterfallOffsetHi;
 	int		averagingCnt;
+	int		fftFactor;
 
 } TReceiver;
 
@@ -546,8 +567,8 @@ typedef struct _wideband {
 	bool	wideBandDisplayStatus;
 	bool	averaging;
 
-	int		numberOfBuffers;
-	int		averagingCnt;
+	int	numberOfBuffers;
+	int	averagingCnt;
 
 	float	scalePosition;
 
@@ -1035,6 +1056,7 @@ public:
 	bool getPanLockedStatus(int rx);
 	bool getClickVFOStatus(int rx);
 	bool getHairCrossStatus(int rx);
+	bool getFFTAutoStatus(int rx);
 
 	int		getMercurySpeed()			{ return m_mercurySpeed; }
 	int		getOutputSampleIncrement()	{ return m_outputSampleIncrement; }
@@ -1102,8 +1124,7 @@ public:
 
 	bool getSpectrumAveraging(int rx);
 	int getSpectrumAveragingCnt(int rx);
-
-	int getFFTMultiplicator()			{ return m_fft; }
+	int getFFTMultiplicator(int rx);//			{ return m_fft; }
 
 	QMutex 		debugMutex;
 
@@ -1482,7 +1503,7 @@ private:
 	int		m_chirpFilterLowerFrequency;
 	int		m_chirpFilterUpperFrequency;
 
-	int		m_fft;
+	//int		m_fft;
 
 	/*bool	m_cudaPresence;
 	int		m_cuda_devices;

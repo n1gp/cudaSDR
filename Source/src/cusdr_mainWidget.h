@@ -107,6 +107,7 @@ public slots:
 	void	suspendSignal(QObject *sender);
 	void	startPlaybackSignal(QObject *sender);
 	void	showSettingsDialogSignal(QObject *sender);
+	void	showWarningDialog(const QString &msg);
 
 private:
 	void	setSystemState(
@@ -333,7 +334,6 @@ private slots:
 	void showStatusBarMessage(const QString &msg, int time);
 	void clearStatusBarMessage();
 	void showNetworkIODialog();
-	void showWarningDialog(const QString &msg);
 
 	void addNetworkIOComboBoxEntry(QString str);
 	void clearNetworkIOComboBoxEntry();

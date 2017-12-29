@@ -117,6 +117,7 @@ RadioPopupWidget::RadioPopupWidget(QWidget *parent, int rx)
 	CHECKED_CONNECT(stickyBtn, SIGNAL(clicked()), this, SLOT(setSticky()));
 
 	createOptionsBtnGroup();
+	createFFTOptionsGroup();
 	createBandBtnGroup();
 	createModeBtnGroup();
 	createAgcBtnGroup();
@@ -150,6 +151,8 @@ RadioPopupWidget::RadioPopupWidget(QWidget *parent, int rx)
 	mainLayout->addSpacing(16);
 	//mainLayout->addStretch();
 	mainLayout->addLayout(optionsVBox);
+	mainLayout->addSpacing(8);
+	mainLayout->addLayout(fftOptionsVBox);
 	mainLayout->addSpacing(16);
 	mainLayout->addLayout(bandVBox);
 	mainLayout->addSpacing(8);
@@ -535,6 +538,62 @@ void RadioPopupWidget::createOptionsBtnGroup() {
 	optionsVBox->addLayout(hbox5);
 }
 
+void RadioPopupWidget::createFFTOptionsGroup() {
+
+	m_FFTAutoBtn = new AeroButton("Auto", this);
+	m_FFTAutoBtn->setRoundness(10);
+	m_FFTAutoBtn->setFont(m_fonts.smallFont);
+
+	m_4kFFTBtn = new AeroButton("FFT 4k", this);
+	m_4kFFTBtn->setRoundness(10);
+	m_4kFFTBtn->setFont(m_fonts.smallFont);
+
+	m_8kFFTBtn = new AeroButton("FFT 8k", this);
+	m_8kFFTBtn->setRoundness(10);
+	m_8kFFTBtn->setFont(m_fonts.smallFont);
+
+	m_16kFFTBtn = new AeroButton("FFT 16k", this);
+	m_16kFFTBtn->setRoundness(10);
+	m_16kFFTBtn->setFont(m_fonts.smallFont);
+
+	m_32kFFTBtn = new AeroButton("FFT 32k", this);
+	m_32kFFTBtn->setRoundness(10);
+	m_32kFFTBtn->setFont(m_fonts.smallFont);
+
+	m_64kFFTBtn = new AeroButton("FFT 64k", this);
+	m_64kFFTBtn->setRoundness(10);
+	m_64kFFTBtn->setFont(m_fonts.smallFont);
+
+	m_128kFFTBtn = new AeroButton("FFT 128k", this);
+	m_128kFFTBtn->setRoundness(10);
+	m_128kFFTBtn->setFont(m_fonts.smallFont);
+
+	m_256kFFTBtn = new AeroButton("FFT 256k", this);
+	m_256kFFTBtn->setRoundness(10);
+	m_256kFFTBtn->setFont(m_fonts.smallFont);
+
+	QHBoxLayout* hbox1 = new QHBoxLayout();
+	hbox1->setContentsMargins(0, 0, 0, 0);
+	hbox1->setSpacing(0);
+	hbox1->addWidget(m_FFTAutoBtn);
+	hbox1->addWidget(m_4kFFTBtn);
+	hbox1->addWidget(m_8kFFTBtn);
+	hbox1->addWidget(m_16kFFTBtn);
+	
+	QHBoxLayout* hbox2 = new QHBoxLayout();
+	hbox2->setContentsMargins(0, 0, 0, 0);
+	hbox2->setSpacing(0);
+	hbox2->addWidget(m_32kFFTBtn);
+	hbox2->addWidget(m_64kFFTBtn);
+	hbox2->addWidget(m_128kFFTBtn);
+	hbox2->addWidget(m_256kFFTBtn);
+
+	fftOptionsVBox = new QVBoxLayout;
+	fftOptionsVBox->setSpacing(1);
+	fftOptionsVBox->addLayout(hbox1);
+	fftOptionsVBox->addLayout(hbox2);
+}
+
 void RadioPopupWidget::createBandBtnGroup() {
 
     band2200mBtn = new AeroButton("2200m", this);
@@ -605,6 +664,22 @@ void RadioPopupWidget::createBandBtnGroup() {
 	bandBtnList.append(band33cmBtn);
 	CHECKED_CONNECT(band33cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
 
+	band23cmBtn = new AeroButton("23 cm", this);
+	bandBtnList.append(band23cmBtn);
+	CHECKED_CONNECT(band23cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band13cmBtn = new AeroButton("13 cm", this);
+	bandBtnList.append(band13cmBtn);
+	CHECKED_CONNECT(band13cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band10cmBtn = new AeroButton("10 cm", this);
+	bandBtnList.append(band10cmBtn);
+	CHECKED_CONNECT(band10cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
+	band5cmBtn = new AeroButton("5 cm", this);
+	bandBtnList.append(band5cmBtn);
+	CHECKED_CONNECT(band5cmBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
+
 	bandGenBtn = new AeroButton("Gen", this);
 	bandBtnList.append(bandGenBtn);
 	CHECKED_CONNECT(bandGenBtn, SIGNAL(clicked()), this, SLOT(bandChangedByBtn()));
@@ -637,22 +712,30 @@ void RadioPopupWidget::createBandBtnGroup() {
 	hbox2->addWidget(band12mBtn);
 	hbox2->addWidget(band10mBtn);
     hbox2->addWidget(band6mBtn);
-    hbox2->addWidget(bandGenBtn);
+    hbox2->addWidget(band2mBtn);
 
 	QHBoxLayout *hbox3 = new QHBoxLayout();
 	hbox3->setContentsMargins(0, 0, 0, 0);
 	hbox3->setSpacing(0);
-    hbox3->addWidget(band2mBtn);
     hbox3->addWidget(band125cmBtn);
 	hbox3->addWidget(band70cmBtn);
-	hbox3->addWidget(band12mBtn);
 	hbox3->addWidget(band33cmBtn);
+	hbox3->addWidget(band23cmBtn);
+	hbox3->addWidget(band13cmBtn);
+	hbox3->addWidget(band10cmBtn);
+	hbox3->addWidget(band5cmBtn);
+
+	QHBoxLayout *hbox4 = new QHBoxLayout();
+	hbox4->setContentsMargins(0, 0, 0, 0);
+	hbox4->setSpacing(0);
+    hbox4->addWidget(bandGenBtn);
 
     bandVBox = new QVBoxLayout;
 	bandVBox->setSpacing(1);
     bandVBox->addLayout(hbox1);
     bandVBox->addLayout(hbox2);
     bandVBox->addLayout(hbox3);
+    bandVBox->addLayout(hbox4);
 
 }
 
@@ -1197,6 +1280,18 @@ void RadioPopupWidget::bandChangedByBtn() {
 	else
 	if (str == "33 cm")
         set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm33));
+	else
+	if (str == "23 cm")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm23));
+	else
+	if (str == "13 cm")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm13));
+	else
+	if (str == "10 cm")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm10));
+	else
+	if (str == "5 cm")
+        set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(cm5));
 	else
 	if (str == "Gen")
         set->setVFOFrequency(this, 2, m_receiver, m_lastVfoFrequencyList.at(gen));

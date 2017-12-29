@@ -420,8 +420,10 @@ private:
 	unsigned short	m_offset;
 	unsigned short	m_length;
 
-	long			m_sendSequence;
-	long			m_oldSendSequence;
+//RRK	long			m_sendSequence;
+//RRK	long			m_oldSendSequence;
+	quint32			m_sendSequence;
+	quint32			m_oldSendSequence;
 
 	volatile bool	m_stopped;
 
