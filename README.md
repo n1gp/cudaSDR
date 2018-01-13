@@ -25,3 +25,5 @@ QT_SELECT=qt5 qmake cudaSDR.pro
 make -j9
 
 To make for Hermes-Lite edit Makefile and add -DHL at the end of DEFINES
+
+Checkout https://youtu.be/Bg_bKfJTlbk for a good overview video W1AEX made of using this application.
