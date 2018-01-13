@@ -95,6 +95,7 @@ private:
 	QVBoxLayout*	optionsVBox;
 	QVBoxLayout*	fftOptionsVBox;
 	QVBoxLayout*	bandVBox;
+	QVBoxLayout*	adcVBox;
 	QVBoxLayout*	modeVBox;
 	QVBoxLayout*	agcVBox;
 	//QVBoxLayout*	mercuryBtnVBox();
@@ -181,6 +182,11 @@ private:
 
 	QList<AeroButton *>	dspModeBtnList;
 
+	AeroButton*		adc1Btn;
+	AeroButton*		adc2Btn;
+
+	QList<AeroButton *>	adcModeBtnList;
+
 	AeroButton*		showAGCLines;
 	AeroButton*		agcOFF;
 	AeroButton*		agcLONG;
@@ -240,6 +246,7 @@ private:
 
 	HamBand				m_hamBand;
 	//DSPMode				m_dspMode;
+	ADCMode				m_adcMode;
 	AGCMode				m_agcMode;
 	TDefaultFilterMode	m_filterMode;
 
@@ -288,6 +295,7 @@ private slots:
 	void createOptionsBtnGroup();
 	void createFFTOptionsGroup();
 	void createBandBtnGroup();
+	void createAdcBtnGroup();
 	void createModeBtnGroup();
 	void createAgcBtnGroup();
 	void createFilterBtnWidgetA();
@@ -314,6 +322,8 @@ private slots:
 	void bandChanged(QObject *sender, int rx, bool byButton, HamBand band);
 	void dspModeChangedByBtn();
 	void dspModeChanged(QObject *sender, int rx, DSPMode mode);
+	void adcModeChangedByBtn();
+	void adcModeChanged(QObject *sender, int rx, ADCMode mode);
 	void agcModeChangedByBtn();
 	void agcModeChanged(QObject *sender, int rx, AGCMode mode, bool hang);
 	void agcShowLinesChanged();

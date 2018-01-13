@@ -84,6 +84,7 @@ RadioPopupWidget::RadioPopupWidget(QWidget *parent, int rx)
 	m_hamBand = m_receiverDataList.at(m_receiver).hamBand;
 	//m_dspMode = m_receiverDataList.at(m_receiver).dspMode;
 	m_dspModeList = m_receiverDataList.at(m_receiver).dspModeList;
+	m_adcMode = m_receiverDataList.at(m_receiver).adcMode;
 	m_agcMode = m_receiverDataList.at(m_receiver).agcMode;
 	m_filterMode = m_receiverDataList.at(m_receiver).defaultFilterMode;
 	m_filterLo = m_receiverDataList.at(m_receiver).filterLo;
@@ -119,6 +120,7 @@ RadioPopupWidget::RadioPopupWidget(QWidget *parent, int rx)
 	createOptionsBtnGroup();
 	createFFTOptionsGroup();
 	createBandBtnGroup();
+	createAdcBtnGroup();
 	createModeBtnGroup();
 	createAgcBtnGroup();
 	createFilterBtnWidgetA();
@@ -156,6 +158,8 @@ RadioPopupWidget::RadioPopupWidget(QWidget *parent, int rx)
 	mainLayout->addSpacing(16);
 	mainLayout->addLayout(bandVBox);
 	mainLayout->addSpacing(8);
+	mainLayout->addLayout(adcVBox);
+	mainLayout->addSpacing(8);
 	mainLayout->addLayout(modeVBox);
 	mainLayout->addSpacing(8);
 	mainLayout->addWidget(m_filterStackedWidget);
@@ -170,6 +174,7 @@ RadioPopupWidget::RadioPopupWidget(QWidget *parent, int rx)
 	bandBtnList.at(m_hamBand)->update();
 
 	dspModeChanged(this, 0, m_dspModeList.at(m_hamBand));
+	adcModeChanged(this, m_receiver, m_adcMode);
 	agcModeChanged(this, 0, m_agcMode, false);
 	filterChanged(this, 0, m_filterLo, m_filterHi);
 
@@ -267,6 +272,12 @@ void RadioPopupWidget::setupConnections() {
 		SIGNAL(dspModeChanged(QObject *, int, DSPMode)), 
 		this, 
 		SLOT(dspModeChanged(QObject *, int, DSPMode)));
+
+	CHECKED_CONNECT(
+		set, 
+		SIGNAL(adcModeChanged(QObject *, int, ADCMode)),
+		this, 
+		SLOT(adcModeChanged(QObject *, int, ADCMode)));
 
 	CHECKED_CONNECT(
 		set, 
@@ -737,6 +748,34 @@ void RadioPopupWidget::createBandBtnGroup() {
     bandVBox->addLayout(hbox3);
     bandVBox->addLayout(hbox4);
 
+}
+
+void RadioPopupWidget::createAdcBtnGroup() {
+	adc1Btn = new AeroButton("ADC1", this);
+	adcModeBtnList.append(adc1Btn);
+	CHECKED_CONNECT(adc1Btn, SIGNAL(clicked()), this, SLOT(adcModeChangedByBtn()));
+
+	adc2Btn = new AeroButton("ADC2", this);
+	adcModeBtnList.append(adc2Btn);
+	CHECKED_CONNECT(adc2Btn, SIGNAL(clicked()), this, SLOT(adcModeChangedByBtn()));
+
+	foreach (AeroButton *btn, adcModeBtnList) {
+
+		btn->setRoundness(0);
+		btn->setFixedHeight(btn_height);
+		btn->setStyleSheet(set->getMiniButtonStyle());
+		btn->update();
+	}
+
+	QHBoxLayout *hbox1 = new QHBoxLayout();
+	hbox1->setContentsMargins(0, 0, 0, 0);
+	hbox1->setSpacing(0);
+	hbox1->addWidget(adc1Btn);
+	hbox1->addWidget(adc2Btn);
+
+	adcVBox = new QVBoxLayout;
+	adcVBox->setSpacing(1);
+	adcVBox->addLayout(hbox1);
 }
 
 void RadioPopupWidget::createModeBtnGroup() {
@@ -2247,6 +2286,41 @@ void RadioPopupWidget::filterChanged(QObject *sender, int rx, qreal low, qreal h
 			filter25BtnC->update();
 		}	
 	}
+}
+
+void RadioPopupWidget::adcModeChangedByBtn() {
+
+	AeroButton *button = qobject_cast<AeroButton *>(sender());
+	int btn = adcModeBtnList.indexOf(button);
+	
+	foreach(AeroButton *btn, adcModeBtnList) {
+
+		btn->setBtnState(AeroButton::OFF);
+		btn->update();
+	}
+
+	set->setADCMode(this, m_receiver, (ADCMode) btn);
+	m_adcMode = (ADCMode) btn;
+	
+	button->setBtnState(AeroButton::ON);
+	button->update();
+}
+
+void RadioPopupWidget::adcModeChanged(QObject *sender, int rx, ADCMode mode) {
+
+	Q_UNUSED(sender)
+	//RADIOPOPUP_DEBUG << "RadioPopupWidget::adcModeChanged rx: " << rx;
+	if (m_receiver != rx) return;
+	m_adcMode = mode;
+
+	foreach(AeroButton *btn, adcModeBtnList) {
+
+		btn->setBtnState(AeroButton::OFF);
+		btn->update();
+	}
+
+	adcModeBtnList.at(mode)->setBtnState(AeroButton::ON);
+	adcModeBtnList.at(mode)->update();
 }
 
 void RadioPopupWidget::agcModeChangedByBtn() {

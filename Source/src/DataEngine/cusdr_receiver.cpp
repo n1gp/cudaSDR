@@ -121,6 +121,12 @@ void Receiver::setupConnections() {
 
 	CHECKED_CONNECT(
 		set,
+		SIGNAL(adcModeChanged(QObject *, int, ADCMode)),
+		this,
+		SLOT(setADCMode(QObject *, int, ADCMode)));
+
+	CHECKED_CONNECT(
+		set,
 		SIGNAL(agcModeChanged(QObject *, int, AGCMode, bool)),
 		this,
 		SLOT(setAGCMode(QObject *, int, AGCMode, bool)));
@@ -220,6 +226,7 @@ void Receiver::setReceiverData(TReceiver data) {
 	m_hamBand = m_receiverData.hamBand;
 	m_dspMode = m_receiverData.dspMode;
 	m_dspModeList = m_receiverData.dspModeList;
+	m_adcMode = m_receiverData.adcMode;
 	m_agcMode = m_receiverData.agcMode;
 	m_agcGain = m_receiverData.acgGain;
 	m_agcFixedGain_dB = m_receiverData.agcFixedGain_dB;
@@ -476,6 +483,18 @@ void Receiver::setDspMode(QObject *sender, int rx, DSPMode mode) {
 
 	//QString msg = "[receiver]: set mode for receiver %1 to %2";
 	//emit messageEvent(msg.arg(rx).arg(set->getDSPModeString(m_dspMode)));
+}
+
+void Receiver::setADCMode(QObject *sender, int rx, ADCMode mode) {
+
+	Q_UNUSED(sender)
+	
+	if (m_receiver != rx) return;
+	if (m_adcMode == mode) return;
+
+	m_adcMode = mode;
+
+	//RECEIVER_DEBUG << "RRK setADCMode = " << m_adcMode;
 }
 
 void Receiver::setAGCMode(QObject *sender, int rx, AGCMode mode, bool hang) {

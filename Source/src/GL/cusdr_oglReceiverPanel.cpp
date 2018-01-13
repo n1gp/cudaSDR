@@ -163,6 +163,9 @@ QGLReceiverPanel::QGLReceiverPanel(QWidget *parent, int rx)
 
 	m_mouseWheelFreqStep = m_rxDataList.at(m_receiver).mouseWheelFreqStep;
 
+	m_adcMode = m_rxDataList.at(m_receiver).adcMode;
+	m_adcModeString = set->getADCModeString(m_receiver);
+
 	m_agcMode = m_rxDataList.at(m_receiver).agcMode;
 	m_agcModeString = set->getAGCModeString(m_receiver);
 	m_agcFixedGain = m_rxDataList.at(m_receiver).agcFixedGain_dB;
@@ -544,6 +547,12 @@ void QGLReceiverPanel::setupConnections() {
 		SIGNAL(showAGCLinesStatusChanged(QObject *, bool, int)),
 		this,
 		SLOT(setAGCLinesStatus(QObject *, bool, int)));
+
+	CHECKED_CONNECT(
+		set,
+		SIGNAL(adcModeChanged(QObject *, int, ADCMode)),
+		this,
+		SLOT(setADCMode(QObject *, int, ADCMode)));
 
 	CHECKED_CONNECT(
 		set,
@@ -1976,6 +1985,7 @@ void QGLReceiverPanel::drawReceiverInfo() {
 
 		int alpha;
 		QColor colFlt;
+		QColor colADC;
 		QColor colAGC;
 		QColor colDSP;
 		QRect rect;
@@ -1986,6 +1996,7 @@ void QGLReceiverPanel::drawReceiverInfo() {
 
 				colDSP = QColor(1, 190, 180, 180);
 				colFlt = QColor(200, 190, 50, 180);
+				colADC = QColor(215, 130, 50, 180);
 				if (m_showAGCLines)
 					colAGC = QColor(255, 170, 90, 180);
 				else
@@ -1999,12 +2010,14 @@ void QGLReceiverPanel::drawReceiverInfo() {
 				colFlt = QColor(110, 100, 1, 180);
 				colDSP = QColor(1, 100, 90, 180);
 				colAGC = QColor(165, 80, 1);
+				colADC = QColor(165, 80, 1);
 			}
 		}
 		else {
 
 			alpha = 100;
 			colFlt = m_darkColor;
+			colADC = m_darkColor;
 			colAGC = m_darkColor;
 			colDSP = m_darkColor;
 		}
@@ -2041,6 +2054,17 @@ void QGLReceiverPanel::drawReceiverInfo() {
 
 		rect = QRect(x1, y1, m_fonts.smallFontMetrics->width(str) + 4, m_fonts.fontHeightSmallFont + 2);
 		drawGLRect(rect, colAGC, 2.0f);
+		qglColor(QColor(0, 0, 0));
+		m_oglTextSmall->renderText(x1+1, y1-2, 3.0f, str);
+
+		// ADC mode
+		x1 += m_fonts.smallFontMetrics->width(str) + 4;
+
+		str = "%1";
+		str = str.arg(m_adcModeString);
+
+		rect = QRect(x1, y1, m_fonts.smallFontMetrics->width(str) + 4, m_fonts.fontHeightSmallFont + 2);
+		drawGLRect(rect, colADC, 2.0f);
 		qglColor(QColor(0, 0, 0));
 		m_oglTextSmall->renderText(x1+1, y1-2, 3.0f, str);
 
@@ -4472,6 +4496,18 @@ void QGLReceiverPanel::setAGCLineFixedLevel(QObject *sender, int rx, qreal value
 
 	m_agcFixedGain = value;
 	//GRAPHICS_DEBUG << "m_agcFixedGain = " << m_agcFixedGain;
+}
+
+void QGLReceiverPanel::setADCMode(QObject *sender, int rx, ADCMode mode) {
+
+	Q_UNUSED(sender)
+
+	if (m_receiver != rx) return;
+
+	m_adcMode = mode;
+	m_adcModeString = set->getADCModeString(m_receiver);
+	
+	update();
 }
 
 void QGLReceiverPanel::setAGCMode(QObject *sender, int rx, AGCMode mode, bool hangEnabled) {

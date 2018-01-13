@@ -112,6 +112,10 @@ private:
 	AeroButton	*samBtn;
 	AeroButton	*drmBtn;
 
+	QList<AeroButton *>	adcModeBtnList;
+	AeroButton	*adc1Btn;
+	AeroButton	*adc2Btn;
+
 	AeroButton	*filter1kBtnA;
 	AeroButton	*filter1k8BtnA;
 	AeroButton	*filter2k1BtnA;
@@ -162,6 +166,7 @@ private:
 	QList<DSPMode>		m_dspModeList;
 	HamBand				m_hamBand;
 	//DSPMode				m_dspMode;
+	ADCMode				m_adcMode;
 	AGCMode				m_agcMode;
 	TDefaultFilterMode	m_filterMode;
 

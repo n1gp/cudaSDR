@@ -200,6 +200,7 @@ private:
 	
 	QSlider*		m_volumeSlider;
 	QSlider*		m_agcGainSlider;
+	ADCMode			m_adcMode;
 	AGCMode			m_agcMode;
 
 	DataEngine*			m_dataEngine;
@@ -318,6 +319,7 @@ private slots:
 	void getNetworkInterfaces();
 	void setMainVolume(int value);
 	//void setHamBand(QObject *sender, int rx, bool byButton, HamBand band);
+    void setADCMode(QObject *sender, int rx, ADCMode mode);
 	void setAGCMode(QObject *sender, int rx, AGCMode mode, bool hang);
 	void setAGCGain(int value);
 	//void setAGCGain(QObject *sender, int rx, int value);

@@ -446,6 +446,7 @@ typedef struct _hpsdrParameter {
 	//int		hpsdr_122_88MhzSource;
 	int		mic_source;
 	int		rxClass;
+	int		rx_adc_change;
 	int		rx_freq_change;
 	int		tx_freq_change;
 	
@@ -506,6 +507,7 @@ typedef struct _receiver {
 	HamBand				hamBand;
 	HamBand				lastHamBand;
 	DSPMode				dspMode;
+	ADCMode				adcMode;
 	AGCMode				agcMode;
 	TDefaultFilterMode	defaultFilterMode;
 	PanGraphicsMode		panMode;
@@ -846,6 +848,7 @@ signals:
 
 	void hamBandChanged(QObject *sender, int rx, bool byButton, HamBand band);
 	void dspModeChanged(QObject *sender, int rx, DSPMode mode);
+	void adcModeChanged(QObject *sender, int rx, ADCMode mode);
 	void agcModeChanged(QObject *sender, int rx, AGCMode mode, bool hangEnabled);
 	void agcHangEnabledChanged(QObject *sender, int rx, bool hang);
 	void agcGainChanged(QObject *sender, int rx, int value);
@@ -1077,7 +1080,9 @@ public:
 	
 	qreal	getMainVolume(int rx);
 	qreal	getMouseWheelFreqStep(int rx);// { return m_mouseWheelFreqStep; }
+	ADCMode getADCMode(int rx);
 	AGCMode getAGCMode(int rx);
+	QString getADCModeString(int rx);
 	QString getAGCModeString(int rx);
 	int		getAGCGain(int rx);
 	qreal	getAGCMaximumGain_dB(int rx);
@@ -1268,6 +1273,7 @@ public slots:
 	
 	void setHamBand(QObject* sender, int rx, bool byButton, HamBand band);
 	void setDSPMode(QObject* sender, int rx, DSPMode mode);
+	void setADCMode(QObject* sender, int rx, ADCMode mode);
 	void setAGCMode(QObject* sender, int rx, AGCMode mode);
 	void setAGCGain(QObject* sender, int rx, int value);
 	void setAGCMaximumGain_dB(QObject *sender, int rx, qreal value);

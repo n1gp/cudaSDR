@@ -62,6 +62,7 @@ public:
 	QSDR::_DSPCore		getDSPCoreMode() const;
 	QHostAddress		getPeerAddress()		{ return m_peerAddress; }
 	HamBand				getHamBand()			{ return m_hamBand; }
+	ADCMode				getADCMode()			{ return m_adcMode; }
 	AGCMode				getAGCMode()			{ return m_agcMode; }
 	QList<int>			getMercuryAttenuators() { return m_mercuryAttenuators; }
 	QList<DSPMode>		getDSPModeList()		{ return m_dspModeList; }
@@ -116,6 +117,7 @@ public slots:
 	void	setSampleRate(int value);
 	void	setHamBand(QObject* sender, int rx, bool byBtn, HamBand band);
 	void	setDspMode(QObject* sender, int rx, DSPMode mode);
+	void	setADCMode(QObject* sender, int rx, ADCMode mode);
 	void	setAGCMode(QObject* sender, int rx, AGCMode mode, bool hang);
 	void	setAGCGain(QObject* sender, int rx, int value);
 	void	setAudioVolume(QObject* sender, int rx, float value);
@@ -171,6 +173,7 @@ private:
 	HamBand				m_hamBand;
 	DSPMode				m_dspMode;
 	AGCMode				m_agcMode;
+	ADCMode				m_adcMode;
 	TDefaultFilterMode	m_filterMode;
 
 	QList<long>			m_lastCtrFrequencyList;

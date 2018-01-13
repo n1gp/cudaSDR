@@ -277,6 +277,12 @@ void MainWindow::setupConnections() {
 
 	CHECKED_CONNECT(
 		set,
+		SIGNAL(adcModeChanged(QObject *, int, ADCMode)),
+		this,
+		SLOT(setADCMode(QObject *, int, ADCMode)));
+
+	CHECKED_CONNECT(
+		set,
 		SIGNAL(agcModeChanged(QObject *, int, AGCMode, bool)),
 		this,
 		SLOT(setAGCMode(QObject *, int, AGCMode, bool)));
@@ -414,6 +420,7 @@ void MainWindow::setup() {
 	setAttenuatorButton();
 
 	m_agcMode = set->getAGCMode(0);
+	m_adcMode = set->getADCMode(0);
 
 	// initialize all Signal/Slot connections
 	setupConnections();
@@ -1782,6 +1789,14 @@ void MainWindow::setTxAllowed(QObject *sender, bool value) {
 		moxBtn->setEnabled(true);
 		tunBtn->setEnabled(true);
 	}
+}
+
+void MainWindow::setADCMode(QObject *sender, int rx, ADCMode mode) {
+
+	Q_UNUSED(sender)
+	Q_UNUSED(rx)
+
+	m_adcMode = mode;
 }
 
 void MainWindow::setAGCMode(QObject *sender, int rx, AGCMode mode, bool hang) {

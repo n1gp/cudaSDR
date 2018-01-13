@@ -85,6 +85,13 @@ typedef enum _dspMode {
 
 } DSPMode;
 
+typedef enum _adcMode {
+
+	adc1, 
+	adc2
+
+} ADCMode;
+
 typedef enum _agcMode {
 
 	agcOFF, 
@@ -115,6 +122,7 @@ typedef enum _defaultFilterMode {
 
 Q_DECLARE_METATYPE (HamBand)
 Q_DECLARE_METATYPE (DSPMode)
+Q_DECLARE_METATYPE (ADCMode)
 Q_DECLARE_METATYPE (AGCMode)
 Q_DECLARE_METATYPE (TDefaultFilterMode)
 

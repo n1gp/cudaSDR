@@ -59,6 +59,8 @@
 */
 
 static int firstTimeRxInit;
+static quint8  adc_rx1_4, adc_rx5_8, adc_rx9_16;
+static quint8  new_adc_rx1_4, new_adc_rx5_8, new_adc_rx9_16;
 
 DataEngine::DataEngine(QObject *parent)
 	: QObject(parent)
@@ -531,7 +533,6 @@ bool DataEngine::getFirmwareVersions() {
 	set->setSystemMessage(str.arg(set->getNumberOfReceivers()), rcvrs * 500);
 
 	if (!initReceivers(rcvrs)) return false;
-
 
 	if (!m_dataIO) createDataIO();
 		
@@ -3358,7 +3359,7 @@ void DataProcessor::encodeCCBytes() {
 
     		if (de->io.tx_freq_change >= 0) {
 
-    			de->io.output_buffer[4] = de->RX.at(de->io.tx_freq_change)->getCtrFrequency() >> 24;
+    		    de->io.output_buffer[4] = de->RX.at(de->io.tx_freq_change)->getCtrFrequency() >> 24;
     		    de->io.output_buffer[5] = de->RX.at(de->io.tx_freq_change)->getCtrFrequency() >> 16;
     		    de->io.output_buffer[6] = de->RX.at(de->io.tx_freq_change)->getCtrFrequency() >> 8;
     		    de->io.output_buffer[7] = de->RX.at(de->io.tx_freq_change)->getCtrFrequency();
@@ -3380,13 +3381,13 @@ void DataProcessor::encodeCCBytes() {
     		// C0 = 0 0 0 1 0 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _7
     		// C0 = 0 0 1 0 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _8 // Was 0 0 0 1 0 0 1 x
     		// C0 = 0 0 1 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _16
-    		// C0 = 0 0 1 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _16
+    		// C0 = 0 1 0 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _32
 
-        // RRK, workaround for gige timing bug, make sure all rx freq's are sent on init.
-        if (firstTimeRxInit) {
-          firstTimeRxInit -= 1;
-          de->io.rx_freq_change = firstTimeRxInit;
-        }
+    		// RRK, workaround for gige timing bug, make sure all rx freq's are sent on init.
+    		if (firstTimeRxInit) {
+    			firstTimeRxInit -= 1;
+    			de->io.rx_freq_change = firstTimeRxInit;
+    		}
 
     		if (de->io.rx_freq_change >= 0) {
 
@@ -3526,9 +3527,42 @@ void DataProcessor::encodeCCBytes() {
     		for (int i = 0; i < 5; i++)
     			de->io.output_buffer[i+3] = de->io.control_out[i];
 
+		// check if we need to update ADC C&C's
+		new_adc_rx1_4 = new_adc_rx5_8 = new_adc_rx9_16 = 0;
+		for (int i = 0; i < set->getNumberOfReceivers(); i++) {
+			if (i < 4) new_adc_rx1_4 |= de->RX.at(i)->getADCMode() << (i * 2);
+			else if (i < 8) new_adc_rx5_8 |= de->RX.at(i)->getADCMode() << ((i-4) * 2);
+			else if (i < 16) new_adc_rx9_16 |= de->RX.at(i)->getADCMode() << (i-8);
+		}
+
+		if ((new_adc_rx1_4 != adc_rx1_4) || (new_adc_rx5_8 != adc_rx5_8) || (new_adc_rx9_16 != adc_rx9_16))
+    			m_sendState = 4;
+		else
+    			m_sendState = 0;
+    		break;
+
+    	case 4:
+		// setup data for ADC c&c's
+		adc_rx1_4 = new_adc_rx1_4;
+		adc_rx5_8 = new_adc_rx5_8;
+		adc_rx9_16 = new_adc_rx9_16;
+
+		de->io.control_out[0] = 0x1C; // 0 0 0 1 1 1 0 x
+    		de->io.control_out[1] = adc_rx1_4; // C1
+    		de->io.control_out[2] = adc_rx5_8; // C2
+    		de->io.control_out[3] = 0x0; // C3, ADC Input Attenuator Tx (0-31dB) [4:0]
+		de->io.control_out[4] = adc_rx9_16; // C4
+
+   		// fill the out buffer with the C&C bytes
+		for (int i = 0; i < 5; i++)
+			de->io.output_buffer[i+3] = de->io.control_out[i];
+
+		//DATA_PROCESSOR_DEBUG << "rx_adc_change rcvr: " << hex << new_adc_rx1_4 << "," << hex << new_adc_rx5_8 << "," << hex << new_adc_rx9_16;
+
     		// round finished
     		m_sendState = 0;
     		break;
+
     }
     de->io.mutex.unlock();
 

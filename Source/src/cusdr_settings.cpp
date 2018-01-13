@@ -58,6 +58,7 @@ Settings::Settings(QObject *parent)
 	qRegisterMetaType<QSDR::_HWInterfaceMode>();
 	qRegisterMetaType<HamBand>();
 	qRegisterMetaType<DSPMode>();
+	qRegisterMetaType<ADCMode>();
 	qRegisterMetaType<AGCMode>();
 	qRegisterMetaType<TDefaultFilterMode>();
 	qRegisterMetaType<TNetworkDevicecard>();
@@ -812,6 +813,14 @@ int Settings::loadSettings() {
 			m_receiverDataList[i].hangEnabled = false;
 		else
 			m_receiverDataList[i].hangEnabled = true;
+
+		cstr = m_rxStringList.at(i);
+		cstr.append("/adcMode");
+		str = settings->value(cstr, "ADC1").toString();
+		if (str == "ADC1")
+			m_receiverDataList[i].adcMode = adc1;
+		else
+			m_receiverDataList[i].adcMode = adc2;
 
 		cstr = m_rxStringList.at(i);
 		cstr.append("/panMode");
@@ -1872,6 +1881,14 @@ int Settings::saveSettings() {
 			settings->setValue(str, "MED");
 		else if (m_receiverDataList[i].agcMode == agcFAST)
 			settings->setValue(str, "FAST");
+				
+		str = m_rxStringList.at(i);
+		str.append("/adcMode");
+
+		if (m_receiverDataList[i].adcMode == adc1)
+			settings->setValue(str, "ADC1");
+		else if (m_receiverDataList[i].adcMode == adc2)
+			settings->setValue(str, "ADC2");
 				
 		str = m_rxStringList.at(i);
 		str.append("/panMode");
@@ -3627,6 +3644,23 @@ AGCMode Settings::getAGCMode(int rx) {
 	return m_receiverDataList.at(rx).agcMode;
 }
 
+ADCMode Settings::getADCMode(int rx) {
+
+	return m_receiverDataList.at(rx).adcMode;
+}
+
+QString Settings::getADCModeString(int rx) {
+
+	ADCMode mode = getADCMode(rx);
+	QString str;
+	if (mode == adc1)
+		str = "ADC1";
+	else
+		str = "ADC2";
+
+	return str;
+}
+
 QString Settings::getAGCModeString(int rx) {
 
 	AGCMode mode = getAGCMode(rx);
@@ -3658,6 +3692,16 @@ QString Settings::getAGCModeString(int rx) {
 			break;
 	}
 	return str;
+}
+
+void Settings::setADCMode(QObject *sender, int rx, ADCMode mode) {
+
+	QMutexLocker locker(&settingsMutex);
+
+	if (m_receiverDataList[rx].adcMode == mode) return;
+	m_receiverDataList[rx].adcMode = mode;
+
+	emit adcModeChanged(sender, rx, mode);
 }
 
 void Settings::setAGCMode(QObject *sender, int rx, AGCMode mode) {

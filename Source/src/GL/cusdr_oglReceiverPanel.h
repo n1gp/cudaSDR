@@ -91,6 +91,7 @@ private:
 
 	DualModeAverager*			averager;
 	RadioPopupWidget*			radioPopup;
+	ADCMode						m_adcMode;
 	AGCMode						m_agcMode;
 	DSPMode						m_dspMode;
 	PanGraphicsMode				m_panMode;
@@ -102,6 +103,7 @@ private:
 	QTime						peakHoldTimer;
 	
 	QString						m_bandText;
+	QString						m_adcModeString;
 	QString						m_agcModeString;
 	QString						m_dspModeString;
 	QString						m_filterWidthString;	
@@ -416,6 +418,7 @@ private slots:
 	void 	updateADCStatus();
 	void	setFramesPerSecond(QObject* sender, int rx, int value);
 	void	setDSPMode(QObject* sender, int rx, DSPMode mode);
+	void	setADCMode(QObject* sender, int rx, ADCMode mode);
 	void	setAGCMode(QObject* sender, int rx, AGCMode mode, bool hangEnabled);
 	void 	setAGCLineLevels(QObject* sender, int rx, qreal thresh, qreal hang);
 	void	setAGCLineFixedLevel(QObject* sender, int rx, qreal value);
