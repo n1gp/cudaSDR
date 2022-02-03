@@ -100,7 +100,7 @@ DataIO::DataIO(THPSDRParameter *ioData)
 
 	m_pSoundCardOut = new CSoundOut(this);
 	//RRK pass -1 to get the systems "default" audio device
-	m_pSoundCardOut->Start(-1, true, 48000, false);
+	m_pSoundCardOut->Start(53, true, 48000, false);
 	m_pSoundCardOut->SetVolume(80);
 }
 

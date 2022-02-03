@@ -133,11 +133,12 @@ void SetAlsaMasterVolume(long volume)
 
 /////////////////////////////////////////////////////////////////////
 // Starts up soundcard output thread using soundcard at list OutDevIndx
+// *** RRK See DataEngine/cusdr_dataIO.cpp for HACKED OutDevIndx ***
 /////////////////////////////////////////////////////////////////////
 bool CSoundOut::Start(int OutDevIndx, bool StereoOut, double UsrDataRate, bool BlockingMode)
 {
 QAudioDeviceInfo  DeviceInfo;
-	long mvolume;
+	long mvolume, i=0;
 	m_StereoOut = StereoOut;
 	m_BlockingMode = BlockingMode;
 	//Get required soundcard from list
@@ -151,11 +152,11 @@ QAudioDeviceInfo  DeviceInfo;
 
 #if 1 //RRK get a list of audio devices and the default
 	foreach (const QAudioDeviceInfo &deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-	     qDebug() << "l:" << deviceInfo.deviceName();
+	     qDebug() << "l:" << i++ << deviceInfo.deviceName();
 	}
 
 	QAudioDeviceInfo info = QAudioDeviceInfo::defaultOutputDevice();
-	qDebug() << "res:" << info.deviceName();
+	qDebug() << "def:" << info.deviceName();
 #endif
 
 	//Setup fixed format for sound ouput
