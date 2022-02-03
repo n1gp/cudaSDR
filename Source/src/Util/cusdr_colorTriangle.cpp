@@ -62,7 +62,7 @@
 //#include <QtGui/QLayout>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
-//#include <QtGui/QPainterPath>
+#include <QtGui/QPainterPath>
 //#include <QtGui/QPixmap>
 //#include <QtGui/QResizeEvent>
 //#include <QtGui/QToolTip>
