@@ -58,7 +58,6 @@
 	- implements the interface to the Chirp WSPR decoding functionality.
 */
 
-static int firstTimeRxInit;
 static quint8  adc_rx1_4, adc_rx5_8, adc_rx9_16;
 static quint8  new_adc_rx1_4, new_adc_rx5_8, new_adc_rx9_16;
 
@@ -527,7 +526,6 @@ bool DataEngine::getFirmwareVersions() {
 
 	// init receivers
 	int rcvrs = set->getNumberOfReceivers();
-	firstTimeRxInit = rcvrs;
 
 	QString str = "Initializing %1 receiver(s)...please wait";
 	set->setSystemMessage(str.arg(set->getNumberOfReceivers()), rcvrs * 500);
@@ -3382,12 +3380,6 @@ void DataProcessor::encodeCCBytes() {
     		// C0 = 0 0 1 0 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _8 // Was 0 0 0 1 0 0 1 x
     		// C0 = 0 0 1 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _16
     		// C0 = 0 1 0 1 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _32
-
-    		// RRK, workaround for gige timing bug, make sure all rx freq's are sent on init.
-    		if (firstTimeRxInit) {
-    			firstTimeRxInit -= 1;
-    			de->io.rx_freq_change = firstTimeRxInit;
-    		}
 
     		if (de->io.rx_freq_change >= 0) {
 

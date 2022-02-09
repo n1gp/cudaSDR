@@ -387,7 +387,7 @@ void DataIO::sendInitFramesToNetworkDevice(int rx) {
     initDatagram[521] = SYNC;
     initDatagram[522] = SYNC;
 
-	initDatagram[523] = io->control_out[0] | ((rx + 2) << 1);
+	initDatagram[523] = io->control_out[0] | (io->rx_freq_change < 7)?((rx + 2) << 1):((rx + 11) << 1);
 	initDatagram[524] = set->getCtrFrequencies().at(rx) >> 24;
 	initDatagram[525] = set->getCtrFrequencies().at(rx) >> 16;
 	initDatagram[526] = set->getCtrFrequencies().at(rx) >> 8;
